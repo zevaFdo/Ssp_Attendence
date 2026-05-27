@@ -25,7 +25,11 @@ export type AttendanceStatus =
   | "late"
   | "absent"
   | "wfh"
-  | "on_leave";
+  | "on_leave"
+  | "meeting"
+  | "break"
+  | "out_of_office"
+  | "clocked_out";
 
 export type RequestType = "leave" | "late";
 export type ApprovalStatus = "pending" | "approved" | "rejected";
@@ -40,6 +44,7 @@ type ProfileRow = {
   phone: string | null;
   avatar_url: string | null;
   is_active: boolean;
+  preferred_language: "ja" | "en";
   created_at: string;
   updated_at: string;
 };
@@ -54,6 +59,7 @@ type ProfileInsert = {
   phone?: string | null;
   avatar_url?: string | null;
   is_active?: boolean;
+  preferred_language?: "ja" | "en";
   created_at?: string;
   updated_at?: string;
 };

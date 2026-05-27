@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth/session";
 import {
@@ -14,10 +15,15 @@ import {
 } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { ApprovalActions } from "@/components/requests/ApprovalActions";
-import { format, parseISO } from "date-fns";
+import { formatLocalized } from "@/lib/utils/date";
+import type { Locale as AppLocale } from "@/i18n/config";
 
-export const metadata = { title: "Approvals · Attendance Web" };
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata() {
+  const t = await getTranslations();
+  return { title: t("approvals.metaTitle") };
+}
 
 export default async function ApprovalsPage() {
   const profile = await getCurrentProfile();
@@ -26,6 +32,9 @@ export default async function ApprovalsPage() {
   const isHR = canApproveAsHR(profile.role);
   const isSH = canApproveAsSectionHead(profile.role);
   if (!isHR && !isSH) redirect("/");
+
+  const t = await getTranslations("approvals");
+  const locale = (await getLocale()) as AppLocale;
 
   const supabase = await createClient();
 
@@ -67,25 +76,23 @@ export default async function ApprovalsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Approvals Inbox</h1>
-        <p className="text-sm text-muted-foreground">
-          Review pending leave and late-arrival requests.
-        </p>
+        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
+        <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
       </div>
 
       <Tabs defaultValue={defaultTab}>
         <TabsList>
           {isHR ? (
             <TabsTrigger value="hr">
-              HR Queue · {hrPending?.length ?? 0}
+              {t("hrQueue", { count: hrPending?.length ?? 0 })}
             </TabsTrigger>
           ) : null}
           {isSH ? (
             <TabsTrigger value="sh">
-              Section Head Queue · {shPending?.length ?? 0}
+              {t("shQueue", { count: shPending?.length ?? 0 })}
             </TabsTrigger>
           ) : null}
-          <TabsTrigger value="done">Recently Decided</TabsTrigger>
+          <TabsTrigger value="done">{t("recentlyDecided")}</TabsTrigger>
         </TabsList>
 
         {isHR ? (
@@ -93,7 +100,8 @@ export default async function ApprovalsPage() {
             <RequestQueue
               rows={hrPending ?? []}
               stage="hr"
-              emptyMessage="No requests pending HR review."
+              emptyMessage={t("noHrPending")}
+              locale={locale}
             />
           </TabsContent>
         ) : null}
@@ -103,7 +111,8 @@ export default async function ApprovalsPage() {
             <RequestQueue
               rows={shPending ?? []}
               stage="section_head"
-              emptyMessage="No requests pending Section Head review."
+              emptyMessage={t("noShPending")}
+              locale={locale}
             />
           </TabsContent>
         ) : null}
@@ -113,7 +122,7 @@ export default async function ApprovalsPage() {
             {(completed ?? []).length === 0 ? (
               <Card>
                 <CardContent className="py-10 text-center text-sm text-muted-foreground">
-                  Nothing decided yet.
+                  {t("nothingDecided")}
                 </CardContent>
               </Card>
             ) : (
@@ -130,23 +139,17 @@ export default async function ApprovalsPage() {
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {r.type.toUpperCase()} ·{" "}
-                          {format(parseISO(r.date), "MMM d, yyyy")}
+                          {formatLocalized(r.date, "mediumDate", locale)}
                         </p>
                         <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">
                           {r.reason}
                         </p>
                       </div>
                       <div className="text-right text-xs">
-                        <p>
-                          HR:{" "}
-                          <span className="font-medium">{r.hr_approval}</span>
-                        </p>
-                        <p>
-                          SH:{" "}
-                          <span className="font-medium">
-                            {r.section_head_approval}
-                          </span>
-                        </p>
+                        <ApprovalSummary
+                          hr={r.hr_approval}
+                          sh={r.section_head_approval}
+                        />
                       </div>
                     </div>
                   </Link>
@@ -169,15 +172,18 @@ interface QueueRow {
   profiles?: { full_name?: string; email?: string } | null;
 }
 
-function RequestQueue({
+async function RequestQueue({
   rows,
   stage,
   emptyMessage,
+  locale,
 }: {
   rows: QueueRow[];
   stage: "hr" | "section_head";
   emptyMessage: string;
+  locale: AppLocale;
 }) {
+  const t = await getTranslations("requests");
   if (rows.length === 0) {
     return (
       <Card>
@@ -209,8 +215,17 @@ function RequestQueue({
               </div>
               <p className="mt-1 text-sm">{r.reason}</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                For {format(parseISO(r.date), "MMM d, yyyy")} · submitted{" "}
-                {format(parseISO(r.created_at), "MMM d HH:mm")}
+                {t("for", {
+                  date: formatLocalized(r.date, "mediumDate", locale),
+                })}{" "}
+                ·{" "}
+                {t("submitted", {
+                  date: formatLocalized(
+                    r.created_at,
+                    "shortDateTime",
+                    locale,
+                  ),
+                })}
               </p>
             </div>
             <ApprovalActions requestId={r.id} stage={stage} />
@@ -218,5 +233,28 @@ function RequestQueue({
         </li>
       ))}
     </ul>
+  );
+}
+
+async function ApprovalSummary({
+  hr,
+  sh,
+}: {
+  hr: string;
+  sh: string;
+}) {
+  const tStatus = await getTranslations("approvalStatus");
+  const tLabels = await getTranslations("approvals.labels");
+  return (
+    <>
+      <p>
+        {tLabels("hr")}:{" "}
+        <span className="font-medium">{tStatus(hr)}</span>
+      </p>
+      <p>
+        {tLabels("sectionHead")}:{" "}
+        <span className="font-medium">{tStatus(sh)}</span>
+      </p>
+    </>
   );
 }

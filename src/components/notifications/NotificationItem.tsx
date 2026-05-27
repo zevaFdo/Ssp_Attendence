@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { useTransition } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { markRead } from "@/actions/notifications";
 import { relativeTime } from "@/lib/utils/date";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
+import type { Locale as AppLocale } from "@/i18n/config";
 
 interface Props {
   id: string;
@@ -18,6 +20,8 @@ interface Props {
 }
 
 export function NotificationItem(props: Props) {
+  const t = useTranslations("notifications");
+  const locale = useLocale() as AppLocale;
   const [isPending, startTransition] = useTransition();
 
   function onRead() {
@@ -46,14 +50,14 @@ export function NotificationItem(props: Props) {
         <p className="text-sm font-semibold">{props.title}</p>
         <p className="text-sm text-muted-foreground">{props.message}</p>
         <p className="mt-1 text-xs text-muted-foreground">
-          {relativeTime(props.created_at)}
+          {relativeTime(props.created_at, locale)}
         </p>
         {props.related_request_id ? (
           <Link
             href={`/requests/${props.related_request_id}`}
             className="mt-1 inline-block text-xs font-medium text-primary hover:underline"
           >
-            Open request →
+            {t("openRequest")}
           </Link>
         ) : null}
       </div>
@@ -63,7 +67,7 @@ export function NotificationItem(props: Props) {
           size="icon"
           onClick={onRead}
           disabled={isPending}
-          aria-label="Mark as read"
+          aria-label={t("markAsRead")}
         >
           <Check className="h-4 w-4" />
         </Button>

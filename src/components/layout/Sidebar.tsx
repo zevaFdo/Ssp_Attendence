@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { visibleItems } from "./nav-items";
 import type { UserRole } from "@/types/app";
-import { ROLE_LABELS } from "@/types/app";
 import { Clock } from "lucide-react";
 
 interface SidebarProps {
@@ -16,6 +16,9 @@ interface SidebarProps {
 export function Sidebar({ role, fullName }: SidebarProps) {
   const pathname = usePathname();
   const items = visibleItems(role);
+  const tCommon = useTranslations("common");
+  const tNav = useTranslations("nav");
+  const tRoles = useTranslations("roles");
 
   return (
     <aside className="hidden w-64 shrink-0 border-r bg-card md:flex md:flex-col">
@@ -24,8 +27,10 @@ export function Sidebar({ role, fullName }: SidebarProps) {
           <Clock className="h-5 w-5" />
         </div>
         <div>
-          <p className="text-sm font-semibold leading-tight">Attendance Web</p>
-          <p className="text-xs text-muted-foreground">{ROLE_LABELS[role]}</p>
+          <p className="text-sm font-semibold leading-tight">
+            {tCommon("appName")}
+          </p>
+          <p className="text-xs text-muted-foreground">{tRoles(role)}</p>
         </div>
       </div>
 
@@ -48,14 +53,15 @@ export function Sidebar({ role, fullName }: SidebarProps) {
               )}
             >
               <Icon className="h-4 w-4" />
-              {item.label}
+              {tNav(item.labelKey)}
             </Link>
           );
         })}
       </nav>
 
       <div className="border-t px-4 py-3 text-xs text-muted-foreground">
-        Signed in as <span className="font-medium text-foreground">{fullName}</span>
+        {tCommon("signedInAs")}{" "}
+        <span className="font-medium text-foreground">{fullName}</span>
       </div>
     </aside>
   );

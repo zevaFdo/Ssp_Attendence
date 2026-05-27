@@ -1,7 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { translateZodIssue } from "@/lib/validations/translate";
 import { z } from "zod";
 
 const sectionSchema = z.object({
@@ -20,7 +22,7 @@ export async function upsertSection(formData: FormData) {
     section_head_id: headRaw ? String(headRaw) : null,
   });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
+    return { error: await translateZodIssue(parsed.error) };
   }
   const supabase = await createClient();
   const payload = {
@@ -45,8 +47,9 @@ export async function upsertSection(formData: FormData) {
 }
 
 export async function deleteSection(formData: FormData) {
+  const tErr = await getTranslations("errors");
   const id = String(formData.get("id") ?? "");
-  if (!id) return { error: "Missing id" };
+  if (!id) return { error: tErr("missingId") };
   const supabase = await createClient();
   const { error } = await supabase.from("sections").delete().eq("id", id);
   if (error) return { error: error.message };

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Download, X } from "lucide-react";
 
@@ -13,6 +14,7 @@ const DISMISS_KEY = "aw_pwa_dismissed_at";
 const DISMISS_DAYS = 7;
 
 export function PWAInstallPrompt() {
+  const t = useTranslations("pwa");
   const [evt, setEvt] = useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
@@ -44,20 +46,18 @@ export function PWAInstallPrompt() {
   return (
     <div className="fixed bottom-20 left-1/2 z-40 flex w-[min(420px,calc(100vw-1.5rem))] -translate-x-1/2 items-center gap-3 rounded-xl border bg-card p-3 shadow-lg md:bottom-6 md:left-auto md:right-6 md:translate-x-0">
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold">Install Attendance Web</p>
-        <p className="text-xs text-muted-foreground">
-          Get one-tap access from your home screen.
-        </p>
+        <p className="text-sm font-semibold">{t("installTitle")}</p>
+        <p className="text-xs text-muted-foreground">{t("installSubtitle")}</p>
       </div>
       <Button size="sm" onClick={install}>
         <Download className="h-4 w-4" />
-        Install
+        {t("install")}
       </Button>
       <Button
         size="icon"
         variant="ghost"
         onClick={dismiss}
-        aria-label="Dismiss"
+        aria-label={t("dismiss")}
       >
         <X className="h-4 w-4" />
       </Button>

@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS } from "./nav-items";
 
 export function MobileBottomNav() {
   const pathname = usePathname();
   const items = NAV_ITEMS.filter((it) => it.mobile);
+  const tNav = useTranslations("nav");
+  const tMobile = useTranslations("nav.mobileLabels");
 
   return (
     <nav
@@ -20,6 +23,9 @@ export function MobileBottomNav() {
           item.href === "/"
             ? pathname === "/"
             : pathname === item.href || pathname.startsWith(`${item.href}/`);
+        const label = item.mobileLabelKey
+          ? tMobile(item.mobileLabelKey)
+          : tNav(item.labelKey);
         return (
           <Link
             key={item.href}
@@ -30,7 +36,7 @@ export function MobileBottomNav() {
             )}
           >
             <Icon className="h-5 w-5" />
-            <span>{item.label.split(" ")[0]}</span>
+            <span>{label}</span>
           </Link>
         );
       })}

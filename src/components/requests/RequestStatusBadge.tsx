@@ -1,8 +1,8 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import {
-  APPROVAL_STATUS_CLASSES,
-  APPROVAL_STATUS_LABEL,
-} from "@/lib/utils/status";
+import { APPROVAL_STATUS_CLASSES } from "@/lib/utils/status";
 import type { ApprovalStatus } from "@/types/app";
 
 export function RequestStatusBadge({
@@ -12,6 +12,8 @@ export function RequestStatusBadge({
   label: string;
   status: ApprovalStatus;
 }) {
+  const t = useTranslations("approvalStatus");
+
   return (
     <span
       className={cn(
@@ -20,7 +22,7 @@ export function RequestStatusBadge({
       )}
     >
       <span className="font-semibold">{label}:</span>
-      {APPROVAL_STATUS_LABEL[status]}
+      {t(status)}
     </span>
   );
 }

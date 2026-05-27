@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,7 @@ import { createRequest } from "@/actions/requests";
 import { todayISO } from "@/lib/utils/date";
 
 export function RequestForm() {
+  const t = useTranslations("requests.form");
   const [type, setType] = useState<"leave" | "late">("leave");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -36,7 +38,7 @@ export function RequestForm() {
       <CardContent className="pt-6">
         <form action={onSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label>Request type</Label>
+            <Label>{t("type")}</Label>
             <Select
               value={type}
               onValueChange={(v) => setType(v as "leave" | "late")}
@@ -45,14 +47,14 @@ export function RequestForm() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="leave">Leave Request</SelectItem>
-                <SelectItem value="late">Late Arrival</SelectItem>
+                <SelectItem value="leave">{t("leave")}</SelectItem>
+                <SelectItem value="late">{t("late")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="date">Date</Label>
+            <Label htmlFor="date">{t("date")}</Label>
             <Input
               id="date"
               name="date"
@@ -63,19 +65,17 @@ export function RequestForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="reason">Reason</Label>
+            <Label htmlFor="reason">{t("reason")}</Label>
             <Textarea
               id="reason"
               name="reason"
-              placeholder="Briefly explain the reason for this request..."
+              placeholder={t("reasonPlaceholder")}
               rows={5}
               required
               minLength={5}
               maxLength={1000}
             />
-            <p className="text-xs text-muted-foreground">
-              5–1000 characters. HR will see this immediately.
-            </p>
+            <p className="text-xs text-muted-foreground">{t("reasonHint")}</p>
           </div>
 
           {error ? (
@@ -90,7 +90,7 @@ export function RequestForm() {
             ) : (
               <Send className="h-4 w-4" />
             )}
-            Submit request
+            {t("submit")}
           </Button>
         </form>
       </CardContent>

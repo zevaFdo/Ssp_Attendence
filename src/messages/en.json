@@ -1,0 +1,337 @@
+{
+  "common": {
+    "appName": "Attendance Web",
+    "appDescription": "Employee attendance, leave & late requests, and approvals — mobile-first.",
+    "save": "Save",
+    "saved": "Saved",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "delete": "Delete",
+    "back": "Back",
+    "loading": "Loading...",
+    "today": "Today",
+    "all_caught_up": "All caught up.",
+    "signedInAs": "Signed in as",
+    "signOut": "Sign out",
+    "welcomeBack": "Welcome back, <b>{name}</b>",
+    "language": "Language",
+    "japanese": "日本語",
+    "english": "English"
+  },
+  "locales": {
+    "ja": "日本語",
+    "en": "English"
+  },
+  "nav": {
+    "statusBoard": "Status Board",
+    "clockInOut": "Clock In/Out",
+    "attendance": "Attendance",
+    "requests": "Requests",
+    "approvals": "Approvals",
+    "myTeam": "My Team",
+    "employees": "Employees",
+    "notifications": "Notifications",
+    "adminUsers": "Admin · Users",
+    "adminSections": "Admin · Sections",
+    "adminTeams": "Admin · Teams",
+    "mobileLabels": {
+      "statusBoard": "Home",
+      "clockInOut": "Clock",
+      "requests": "Requests",
+      "notifications": "Alerts"
+    }
+  },
+  "roles": {
+    "admin": "Admin",
+    "hr_supervisor": "HR Supervisor",
+    "section_head": "Section Head",
+    "team_leader": "Team Leader",
+    "employee": "Employee"
+  },
+  "attendanceStatus": {
+    "present": "Present",
+    "late": "Late",
+    "absent": "Absent",
+    "wfh": "WFH",
+    "on_leave": "On Leave",
+    "meeting": "In Meeting",
+    "break": "Break",
+    "out_of_office": "Out of Office",
+    "clocked_out": "Clocked Out"
+  },
+  "approvalStatus": {
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "auth": {
+    "welcomeBack": "Welcome back",
+    "signInPrompt": "Sign in to your Attendance Web account",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "••••••••",
+    "signIn": "Sign in",
+    "signingIn": "Signing in...",
+    "inviteOnly": "New users must be invited by an administrator."
+  },
+  "dashboard": {
+    "title": "Daily Status Board",
+    "subtitle": "{date} · live updates",
+    "empty": "No employees yet. An admin can add team members from the Admin → Users page.",
+    "counts": {
+      "present": "Present {count}",
+      "wfh": "WFH {count}",
+      "meeting": "In Meeting {count}",
+      "break": "Break {count}",
+      "out_of_office": "Out of Office {count}",
+      "clocked_out": "Clocked Out {count}",
+      "late": "Late {count}",
+      "on_leave": "On Leave {count}",
+      "absent": "Absent {count}"
+    },
+    "noSection": "No section",
+    "in": "In",
+    "out": "Out"
+  },
+  "attendance": {
+    "title": "My Attendance",
+    "today": "Today",
+    "chooseStatus": "Set your current status",
+    "alreadyDone": "You have clocked out for the day. See you tomorrow.",
+    "clockInLabel": "Clock In",
+    "clockOutLabel": "Clock Out",
+    "reviewTitle": "Need to review your records?",
+    "reviewSubtitle": "See your full attendance history with date filters.",
+    "viewHistory": "View history",
+    "history": {
+      "title": "Attendance History",
+      "masterSubtitle": "Master view — all employees. Filter by date range or search by name.",
+      "selfSubtitle": "Your personal attendance records.",
+      "from": "From",
+      "to": "To",
+      "searchByName": "Search by employee name",
+      "searchPlaceholder": "Type a name...",
+      "apply": "Apply",
+      "reset": "Reset",
+      "employee": "Employee",
+      "date": "Date",
+      "status": "Status",
+      "in": "In",
+      "out": "Out",
+      "notes": "Notes",
+      "noRecords": "No records found."
+    }
+  },
+  "requests": {
+    "metaList": "Requests · Attendance Web",
+    "metaNew": "New Request · Attendance Web",
+    "metaDetail": "Request · Attendance Web",
+    "listTitleAll": "All Requests",
+    "listTitleMine": "My Requests",
+    "listSubtitleAll": "Every leave/late submission across the organization.",
+    "listSubtitleMine": "Your submitted leave and late-arrival requests.",
+    "newRequest": "New request",
+    "submitRequest": "Submit a request",
+    "emptyTitle": "No requests yet",
+    "emptyBody": "Submit a leave or late-arrival request and we'll route it through the approval workflow automatically.",
+    "submitted": "submitted {date}",
+    "for": "For {date}",
+    "newPageTitle": "New Request",
+    "newPageSubtitle": "Submit a leave or late-arrival request. HR will be notified immediately, then your Section Head once HR approves.",
+    "form": {
+      "type": "Request type",
+      "leave": "Leave Request",
+      "late": "Late Arrival",
+      "date": "Date",
+      "reason": "Reason",
+      "reasonPlaceholder": "Briefly explain the reason for this request...",
+      "reasonHint": "5–1000 characters. HR will see this immediately.",
+      "submit": "Submit request"
+    },
+    "detail": {
+      "back": "Back to requests",
+      "date": "Date",
+      "submitted": "Submitted",
+      "reason": "Reason",
+      "hrDecision": "HR Decision",
+      "sectionHeadDecision": "Section Head Decision",
+      "awaiting": "Awaiting",
+      "shAvailableAfterHr": "Available after HR approval.",
+      "approvalDocumentReady": "Approval document ready",
+      "approvalDocumentSubtitle": "PDF stored in Supabase Storage.",
+      "downloadPdf": "Download PDF",
+      "generating": "Generating…"
+    }
+  },
+  "approvals": {
+    "metaTitle": "Approvals · Attendance Web",
+    "title": "Approvals Inbox",
+    "subtitle": "Review pending leave and late-arrival requests.",
+    "hrQueue": "HR Queue · {count}",
+    "shQueue": "Section Head Queue · {count}",
+    "recentlyDecided": "Recently Decided",
+    "noHrPending": "No requests pending HR review.",
+    "noShPending": "No requests pending Section Head review.",
+    "nothingDecided": "Nothing decided yet.",
+    "approve": "Approve",
+    "reject": "Reject",
+    "labels": {
+      "hr": "HR",
+      "sectionHead": "Section Head"
+    }
+  },
+  "team": {
+    "metaTitle": "My Team · Attendance Web",
+    "title": "My Team",
+    "todaysStatus": "today's status",
+    "noTeamAssigned": "You aren't assigned to a team yet.",
+    "askAdmin": "Ask an admin to assign you a team.",
+    "noMembers": "No team members yet.",
+    "set": "Set",
+    "saved": "Saved"
+  },
+  "employees": {
+    "metaTitle": "Employees · Attendance Web",
+    "title": "Employees",
+    "subtitle": "Invite new employees and manage their assignments.",
+    "table": {
+      "employee": "Employee",
+      "role": "Role",
+      "section": "Section",
+      "team": "Team",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "noEmployees": "No employees found."
+    },
+    "invite": {
+      "title": "Invite a new employee",
+      "subtitle": "They'll receive a secure invite email and can set their password on first sign-in.",
+      "fullName": "Full name",
+      "email": "Email",
+      "role": "Role",
+      "section": "Section",
+      "selectSection": "Select a section...",
+      "team": "Team (optional)",
+      "selectTeam": "Select a team...",
+      "adminOnlyHigherRoles": "Only admins can invite higher-level roles.",
+      "send": "Send invite",
+      "sent": "Invitation sent. The user will receive an email."
+    }
+  },
+  "admin": {
+    "users": {
+      "metaTitle": "Admin · Users",
+      "title": "Admin · Users",
+      "subtitle": "Promote roles, assign sections and teams, or deactivate accounts.",
+      "active": "Active"
+    },
+    "sections": {
+      "metaTitle": "Admin · Sections",
+      "title": "Admin · Sections",
+      "subtitle": "Manage organizational sections and their Section Heads.",
+      "newSection": "New section",
+      "existingSections": "Existing sections",
+      "name": "Name",
+      "head": "Section Head",
+      "description": "Description",
+      "deleteConfirm": "Delete section \"{name}\"? Teams will be removed."
+    },
+    "teams": {
+      "metaTitle": "Admin · Teams",
+      "title": "Admin · Teams",
+      "subtitle": "Group employees into teams and assign Team Leaders.",
+      "newTeam": "New team",
+      "existingTeams": "Existing teams",
+      "name": "Name",
+      "section": "Section",
+      "selectSection": "Select section...",
+      "leader": "Team Leader",
+      "deleteConfirm": "Delete team \"{name}\"?"
+    }
+  },
+  "notifications": {
+    "metaTitle": "Notifications · Attendance Web",
+    "title": "Notifications",
+    "unread": "{count} unread",
+    "markAllRead": "Mark all read",
+    "emptyTitle": "No notifications",
+    "emptyBody": "You'll see request approvals and other updates here.",
+    "openRequest": "Open request →",
+    "markAsRead": "Mark as read",
+    "ariaLabel": "Notifications"
+  },
+  "pwa": {
+    "installTitle": "Install Attendance Web",
+    "installSubtitle": "Get one-tap access from your home screen.",
+    "install": "Install",
+    "dismiss": "Dismiss"
+  },
+  "notFound": {
+    "code": "404",
+    "title": "Page not found",
+    "body": "The page you're looking for doesn't exist or has moved.",
+    "goHome": "Go to dashboard"
+  },
+  "validation": {
+    "emailInvalid": "Enter a valid email",
+    "passwordMin": "Password must be at least 6 characters",
+    "dateFormat": "Date must be in YYYY-MM-DD format",
+    "reasonMin": "Please provide at least 5 characters",
+    "reasonMax": "Keep it under 1000 characters",
+    "invalidInput": "Invalid input",
+    "fullNameMin": "Full name must be at least 2 characters"
+  },
+  "errors": {
+    "notAuthenticated": "Not authenticated",
+    "forbidden": "Forbidden",
+    "alreadyClockedIn": "Already clocked in today.",
+    "notClockedIn": "You haven't clocked in yet today.",
+    "alreadyClockedOut": "Already clocked out today.",
+    "dayFinalized": "Today is already finalized — you've clocked out.",
+    "invalidStatusTransition": "That status change isn't allowed right now.",
+    "missingId": "Missing id",
+    "invalidDecision": "Invalid decision",
+    "failedToCreate": "Failed to create request",
+    "pdfFailed": "PDF generation failed. Try again from the request page.",
+    "approvedPdfFailed": "Approved, but PDF generation failed. Try again from the request page.",
+    "missingRequestId": "Missing requestId",
+    "invitedFailed": "Failed to invite",
+    "adminOnlyInvite": "Only admins can invite non-employee roles.",
+    "failed": "Failed"
+  },
+  "pdf": {
+    "approvedTitle": "Approved {type}",
+    "leaveType": "Leave Request",
+    "lateType": "Late Arrival",
+    "requestId": "Request ID: {id}",
+    "generated": "Generated: {date}",
+    "section_employee": "Employee",
+    "section_request": "Request",
+    "section_approvals": "Approvals",
+    "label_name": "Name",
+    "label_email": "Email",
+    "label_role": "Role",
+    "label_section": "Section",
+    "label_team": "Team",
+    "label_type": "Type",
+    "label_date": "Date",
+    "label_submitted": "Submitted",
+    "label_reason": "Reason",
+    "label_hr_approval": "HR Approval",
+    "label_section_head_approval": "Section Head Approval",
+    "footer": "This document was generated automatically by the Attendance Web system."
+  },
+  "teams": {
+    "leaveTitle": "New Leave Request",
+    "lateTitle": "New Late Arrival",
+    "summaryLeave": "New Leave Request from {name}",
+    "summaryLate": "New Late Arrival from {name}",
+    "subtitleDate": "Date: {date}",
+    "factType": "Type",
+    "factDate": "Date",
+    "factReason": "Reason",
+    "openInApp": "Open in Attendance Web"
+  }
+}

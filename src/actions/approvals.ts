@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
@@ -10,6 +11,7 @@ import {
 import { approvalDecisionSchema } from "@/lib/validations/requests";
 import { buildRequestPdf } from "@/lib/pdf/generator";
 import { uploadRequestPdf } from "@/lib/pdf/upload";
+import { isLocale, type Locale } from "@/i18n/config";
 import type { Profile } from "@/types/app";
 
 async function loadActor(): Promise<Profile | null> {
@@ -27,14 +29,15 @@ async function loadActor(): Promise<Profile | null> {
 }
 
 export async function hrDecide(formData: FormData) {
+  const tErr = await getTranslations("errors");
   const parsed = approvalDecisionSchema.safeParse({
     requestId: formData.get("requestId"),
     decision: formData.get("decision"),
   });
-  if (!parsed.success) return { error: "Invalid decision" };
+  if (!parsed.success) return { error: tErr("invalidDecision") };
 
   const actor = await loadActor();
-  if (!canApproveAsHR(actor?.role)) return { error: "Forbidden" };
+  if (!canApproveAsHR(actor?.role)) return { error: tErr("forbidden") };
 
   const supabase = await createClient();
   const { error } = await supabase
@@ -49,14 +52,15 @@ export async function hrDecide(formData: FormData) {
 }
 
 export async function sectionHeadDecide(formData: FormData) {
+  const tErr = await getTranslations("errors");
   const parsed = approvalDecisionSchema.safeParse({
     requestId: formData.get("requestId"),
     decision: formData.get("decision"),
   });
-  if (!parsed.success) return { error: "Invalid decision" };
+  if (!parsed.success) return { error: tErr("invalidDecision") };
 
   const actor = await loadActor();
-  if (!canApproveAsSectionHead(actor?.role)) return { error: "Forbidden" };
+  if (!canApproveAsSectionHead(actor?.role)) return { error: tErr("forbidden") };
 
   const supabase = await createClient();
   const { error } = await supabase
@@ -74,7 +78,7 @@ export async function sectionHeadDecide(formData: FormData) {
       // Notify the actor; the request is still approved either way.
       return {
         ok: true as const,
-        warning: "Approved, but PDF generation failed. Try again from the request page.",
+        warning: tErr("approvedPdfFailed"),
       };
     }
   }
@@ -111,7 +115,7 @@ export async function finalizeRequestPdf(requestId: string) {
 
   const { data: employee } = await admin
     .from("profiles")
-    .select("full_name, email, role, section_id, team_id")
+    .select("full_name, email, role, section_id, team_id, preferred_language")
     .eq("id", req.user_id)
     .single();
   if (!employee) throw new Error("Employee profile not found");
@@ -136,7 +140,12 @@ export async function finalizeRequestPdf(requestId: string) {
         : Promise.resolve({ data: null }),
     ]);
 
+  const locale: Locale = isLocale(employee.preferred_language)
+    ? employee.preferred_language
+    : "ja";
+
   const pdf = await buildRequestPdf({
+    locale,
     request: {
       id: req.id,
       type: req.type,
@@ -169,8 +178,9 @@ export async function finalizeRequestPdf(requestId: string) {
 }
 
 export async function regeneratePdf(formData: FormData) {
+  const tErr = await getTranslations("errors");
   const requestId = String(formData.get("requestId") ?? "");
-  if (!requestId) return { error: "Missing requestId" };
+  if (!requestId) return { error: tErr("missingRequestId") };
   const actor = await loadActor();
   if (
     !actor ||
@@ -178,13 +188,13 @@ export async function regeneratePdf(formData: FormData) {
       actor.role === "hr_supervisor" ||
       actor.role === "section_head")
   ) {
-    return { error: "Forbidden" };
+    return { error: tErr("forbidden") };
   }
   try {
     await finalizeRequestPdf(requestId);
     revalidatePath(`/requests/${requestId}`);
     return { ok: true as const };
   } catch (e) {
-    return { error: e instanceof Error ? e.message : "Failed" };
+    return { error: e instanceof Error ? e.message : tErr("failed") };
   }
 }

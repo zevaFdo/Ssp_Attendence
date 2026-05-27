@@ -1,14 +1,18 @@
 import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 import { ClockInOutCard } from "@/components/attendance/ClockInOutCard";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
-import { todayISO } from "@/lib/utils/date";
+import { todayISO, formatLocalized } from "@/lib/utils/date";
 import { getCurrentProfile } from "@/lib/auth/session";
-import { format, parseISO } from "date-fns";
 import { History } from "lucide-react";
+import type { Locale as AppLocale } from "@/i18n/config";
 
-export const metadata = { title: "Attendance · Attendance Web" };
+export async function generateMetadata() {
+  const t = await getTranslations();
+  return { title: `${t("attendance.title")} · ${t("common.appName")}` };
+}
 
 export default async function AttendancePage() {
   const profile = await getCurrentProfile();
@@ -22,12 +26,15 @@ export default async function AttendancePage() {
     .eq("date", todayISO())
     .maybeSingle();
 
+  const t = await getTranslations("attendance");
+  const locale = (await getLocale()) as AppLocale;
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">My Attendance</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">
-          {format(parseISO(todayISO()), "EEEE, MMMM d, yyyy")}
+          {formatLocalized(todayISO(), "longDate", locale)}
         </p>
       </div>
 
@@ -36,15 +43,15 @@ export default async function AttendancePage() {
       <Card>
         <CardContent className="flex items-center justify-between p-5">
           <div>
-            <p className="font-semibold">Need to review your records?</p>
+            <p className="font-semibold">{t("reviewTitle")}</p>
             <p className="text-sm text-muted-foreground">
-              See your full attendance history with date filters.
+              {t("reviewSubtitle")}
             </p>
           </div>
           <Button asChild variant="outline">
             <Link href="/attendance/history">
               <History className="h-4 w-4" />
-              View history
+              {t("viewHistory")}
             </Link>
           </Button>
         </CardContent>

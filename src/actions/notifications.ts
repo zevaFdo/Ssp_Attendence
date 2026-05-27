@@ -1,16 +1,18 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 
 export async function markRead(formData: FormData) {
+  const tErr = await getTranslations("errors");
   const id = String(formData.get("id") ?? "");
-  if (!id) return { error: "Missing id" };
+  if (!id) return { error: tErr("missingId") };
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return { error: tErr("notAuthenticated") };
 
   const { error } = await supabase
     .from("notifications")

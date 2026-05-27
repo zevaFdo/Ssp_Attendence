@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -15,6 +16,7 @@ import { initials } from "@/lib/utils/format";
 import { todayISO } from "@/lib/utils/date";
 import { Loader2, Save } from "lucide-react";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
+import { ATTENDANCE_STATUS_VALUES } from "@/lib/utils/status";
 import type { AttendanceStatus } from "@/types/app";
 
 interface Member {
@@ -26,6 +28,9 @@ interface Member {
 }
 
 export function TeamMemberRow({ member }: { member: Member }) {
+  const tTeam = useTranslations("team");
+  const tStatus = useTranslations("attendanceStatus");
+
   const [next, setNext] = useState<AttendanceStatus>(member.status ?? "present");
   const [error, setError] = useState<string | null>(null);
   const [ok, setOk] = useState(false);
@@ -70,11 +75,11 @@ export function TeamMemberRow({ member }: { member: Member }) {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="present">Present</SelectItem>
-            <SelectItem value="late">Late</SelectItem>
-            <SelectItem value="wfh">WFH</SelectItem>
-            <SelectItem value="on_leave">On Leave</SelectItem>
-            <SelectItem value="absent">Absent</SelectItem>
+            {ATTENDANCE_STATUS_VALUES.map((s) => (
+              <SelectItem key={s} value={s}>
+                {tStatus(s)}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <Button size="sm" onClick={save} disabled={isPending}>
@@ -83,12 +88,12 @@ export function TeamMemberRow({ member }: { member: Member }) {
           ) : (
             <Save className="h-3.5 w-3.5" />
           )}
-          Set
+          {tTeam("set")}
         </Button>
         {error ? (
           <span className="text-xs text-rose-700">{error}</span>
         ) : ok ? (
-          <span className="text-xs text-emerald-700">Saved</span>
+          <span className="text-xs text-emerald-700">{tTeam("saved")}</span>
         ) : null}
       </div>
     </li>

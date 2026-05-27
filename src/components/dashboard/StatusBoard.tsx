@@ -1,16 +1,27 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { StatusCard, type StatusCardEmployee } from "./StatusCard";
 import { StatusBoardRealtime } from "./StatusBoardRealtime";
+import {
+  ATTENDANCE_STATUS_CLASSES,
+  ATTENDANCE_STATUS_DOT_CLASSES,
+  ATTENDANCE_STATUS_VALUES,
+} from "@/lib/utils/status";
+import { cn } from "@/lib/utils";
 
 interface StatusBoardProps {
   employees: StatusCardEmployee[];
 }
 
 export function StatusBoard({ employees }: StatusBoardProps) {
+  const t = useTranslations("dashboard");
+  const tCounts = useTranslations("dashboard.counts");
+
   if (employees.length === 0) {
     return (
       <div className="rounded-lg border border-dashed p-10 text-center text-sm text-muted-foreground">
-        No employees yet. An admin can add team members from the Admin → Users
-        page.
+        {t("empty")}
       </div>
     );
   }
@@ -28,25 +39,27 @@ export function StatusBoard({ employees }: StatusBoardProps) {
     <>
       <StatusBoardRealtime />
 
-      <div className="mb-4 flex flex-wrap gap-2 text-xs text-muted-foreground">
-        <span className="rounded-md bg-emerald-50 px-2 py-1 font-medium text-emerald-700 ring-1 ring-emerald-600/20">
-          Present {counts.present ?? 0}
-        </span>
-        <span className="rounded-md bg-sky-50 px-2 py-1 font-medium text-sky-700 ring-1 ring-sky-600/20">
-          WFH {counts.wfh ?? 0}
-        </span>
-        <span className="rounded-md bg-orange-50 px-2 py-1 font-medium text-orange-700 ring-1 ring-orange-600/20">
-          Late {counts.late ?? 0}
-        </span>
-        <span className="rounded-md bg-slate-100 px-2 py-1 font-medium text-slate-700 ring-1 ring-slate-500/20">
-          On Leave {counts.on_leave ?? 0}
-        </span>
-        <span className="rounded-md bg-zinc-100 px-2 py-1 font-medium text-zinc-700 ring-1 ring-zinc-500/20">
-          Absent {counts.absent ?? 0}
-        </span>
+      <div className="mb-4 flex flex-wrap gap-2 text-xs">
+        {ATTENDANCE_STATUS_VALUES.map((s) => (
+          <span
+            key={s}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-md px-2 py-1 font-medium ring-1",
+              ATTENDANCE_STATUS_CLASSES[s],
+            )}
+          >
+            <span
+              className={cn(
+                "h-1.5 w-1.5 rounded-full",
+                ATTENDANCE_STATUS_DOT_CLASSES[s],
+              )}
+            />
+            {tCounts(s, { count: counts[s] ?? 0 })}
+          </span>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {employees.map((e) => (
           <StatusCard key={e.id} employee={e} />
         ))}

@@ -1,7 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { translateZodIssue } from "@/lib/validations/translate";
 import { z } from "zod";
 
 const teamSchema = z.object({
@@ -20,7 +22,7 @@ export async function upsertTeam(formData: FormData) {
     team_leader_id: leaderRaw ? String(leaderRaw) : null,
   });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
+    return { error: await translateZodIssue(parsed.error) };
   }
   const supabase = await createClient();
   const payload = {
@@ -43,8 +45,9 @@ export async function upsertTeam(formData: FormData) {
 }
 
 export async function deleteTeam(formData: FormData) {
+  const tErr = await getTranslations("errors");
   const id = String(formData.get("id") ?? "");
-  if (!id) return { error: "Missing id" };
+  if (!id) return { error: tErr("missingId") };
   const supabase = await createClient();
   const { error } = await supabase.from("teams").delete().eq("id", id);
   if (error) return { error: error.message };

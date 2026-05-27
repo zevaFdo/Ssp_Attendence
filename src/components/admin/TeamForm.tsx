@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,6 +24,9 @@ interface Props {
 }
 
 export function TeamForm({ team, sections, candidates, defaultSectionId }: Props) {
+  const tCommon = useTranslations("common");
+  const tTeams = useTranslations("admin.teams");
+
   const [name, setName] = useState(team?.name ?? "");
   const [sectionId, setSectionId] = useState(
     team?.section_id ?? defaultSectionId ?? "",
@@ -47,7 +51,7 @@ export function TeamForm({ team, sections, candidates, defaultSectionId }: Props
 
   function remove() {
     if (!team?.id) return;
-    if (!confirm(`Delete team "${team.name}"?`)) return;
+    if (!confirm(tTeams("deleteConfirm", { name: team.name }))) return;
     startDelete(async () => {
       const fd = new FormData();
       fd.set("id", team.id);
@@ -60,14 +64,14 @@ export function TeamForm({ team, sections, candidates, defaultSectionId }: Props
     <div className="space-y-3 rounded-lg border bg-card p-4">
       <div className="grid gap-3 md:grid-cols-3">
         <div className="space-y-1.5">
-          <Label className="text-xs">Name</Label>
+          <Label className="text-xs">{tTeams("name")}</Label>
           <Input value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs">Section</Label>
+          <Label className="text-xs">{tTeams("section")}</Label>
           <Select value={sectionId} onValueChange={setSectionId}>
             <SelectTrigger>
-              <SelectValue placeholder="Select section..." />
+              <SelectValue placeholder={tTeams("selectSection")} />
             </SelectTrigger>
             <SelectContent>
               {sections.map((s) => (
@@ -79,7 +83,7 @@ export function TeamForm({ team, sections, candidates, defaultSectionId }: Props
           </Select>
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs">Team Leader</Label>
+          <Label className="text-xs">{tTeams("leader")}</Label>
           <Select value={leaderId} onValueChange={setLeaderId}>
             <SelectTrigger>
               <SelectValue placeholder="—" />
@@ -106,7 +110,7 @@ export function TeamForm({ team, sections, candidates, defaultSectionId }: Props
           ) : (
             <Save className="h-3.5 w-3.5" />
           )}
-          Save
+          {tCommon("save")}
         </Button>
         {team?.id ? (
           <Button
@@ -116,7 +120,7 @@ export function TeamForm({ team, sections, candidates, defaultSectionId }: Props
             disabled={isDeleting}
           >
             <Trash2 className="h-3.5 w-3.5" />
-            Delete
+            {tCommon("delete")}
           </Button>
         ) : null}
       </div>

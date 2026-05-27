@@ -1,12 +1,18 @@
+import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { hasMasterView } from "@/lib/auth/permissions";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
 import { AttendanceHistoryFilters } from "@/components/attendance/AttendanceHistoryFilters";
-import { formatTime } from "@/lib/utils/date";
-import { format, parseISO } from "date-fns";
+import { formatTime, formatLocalized } from "@/lib/utils/date";
+import type { Locale as AppLocale } from "@/i18n/config";
 
-export const metadata = { title: "Attendance History · Attendance Web" };
+export async function generateMetadata() {
+  const t = await getTranslations();
+  return {
+    title: `${t("attendance.history.title")} · ${t("common.appName")}`,
+  };
+}
 
 interface PageProps {
   searchParams: Promise<{ from?: string; to?: string; q?: string }>;
@@ -17,12 +23,14 @@ export default async function AttendanceHistoryPage({ searchParams }: PageProps)
   if (!profile) return null;
   const masterView = hasMasterView(profile.role);
   const sp = await searchParams;
+  const t = await getTranslations("attendance.history");
+  const locale = (await getLocale()) as AppLocale;
 
   const supabase = await createClient();
   let query = supabase
     .from("attendance")
     .select(
-      "id, user_id, date, clock_in, clock_out, status, notes, profiles(full_name, email, role)",
+      "id, user_id, date, clock_in, clock_out, status, notes, profiles!attendance_user_id_fkey(full_name, email, role)",
     )
     .order("date", { ascending: false })
     .limit(500);
@@ -46,11 +54,9 @@ export default async function AttendanceHistoryPage({ searchParams }: PageProps)
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Attendance History</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">
-          {masterView
-            ? "Master view — all employees. Filter by date range or search by name."
-            : "Your personal attendance records."}
+          {masterView ? t("masterSubtitle") : t("selfSubtitle")}
         </p>
       </div>
 
@@ -67,12 +73,14 @@ export default async function AttendanceHistoryPage({ searchParams }: PageProps)
           <table className="w-full text-sm">
             <thead className="bg-muted text-left text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
-                {masterView ? <th className="px-4 py-3">Employee</th> : null}
-                <th className="px-4 py-3">Date</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">In</th>
-                <th className="px-4 py-3">Out</th>
-                <th className="px-4 py-3">Notes</th>
+                {masterView ? (
+                  <th className="px-4 py-3">{t("employee")}</th>
+                ) : null}
+                <th className="px-4 py-3">{t("date")}</th>
+                <th className="px-4 py-3">{t("status")}</th>
+                <th className="px-4 py-3">{t("in")}</th>
+                <th className="px-4 py-3">{t("out")}</th>
+                <th className="px-4 py-3">{t("notes")}</th>
               </tr>
             </thead>
             <tbody className="divide-y">
@@ -82,7 +90,7 @@ export default async function AttendanceHistoryPage({ searchParams }: PageProps)
                     colSpan={masterView ? 6 : 5}
                     className="px-4 py-10 text-center text-sm text-muted-foreground"
                   >
-                    No records found.
+                    {t("noRecords")}
                   </td>
                 </tr>
               ) : (
@@ -99,7 +107,7 @@ export default async function AttendanceHistoryPage({ searchParams }: PageProps)
                       </td>
                     ) : null}
                     <td className="px-4 py-3 tabular-nums">
-                      {format(parseISO(r.date), "MMM d, yyyy")}
+                      {formatLocalized(r.date, "mediumDate", locale)}
                     </td>
                     <td className="px-4 py-3">
                       <StatusBadge status={r.status} />
@@ -123,7 +131,7 @@ export default async function AttendanceHistoryPage({ searchParams }: PageProps)
         <ul className="divide-y md:hidden">
           {filtered.length === 0 ? (
             <li className="px-4 py-8 text-center text-sm text-muted-foreground">
-              No records found.
+              {t("noRecords")}
             </li>
           ) : (
             filtered.map((r) => (
@@ -136,14 +144,18 @@ export default async function AttendanceHistoryPage({ searchParams }: PageProps)
                       </p>
                     ) : null}
                     <p className="text-xs text-muted-foreground">
-                      {format(parseISO(r.date), "MMM d, yyyy")}
+                      {formatLocalized(r.date, "mediumDate", locale)}
                     </p>
                   </div>
                   <StatusBadge status={r.status} />
                 </div>
                 <div className="flex gap-3 text-xs text-muted-foreground">
-                  <span>In: {r.clock_in ? formatTime(r.clock_in) : "—"}</span>
-                  <span>Out: {r.clock_out ? formatTime(r.clock_out) : "—"}</span>
+                  <span>
+                    {t("in")}: {r.clock_in ? formatTime(r.clock_in) : "—"}
+                  </span>
+                  <span>
+                    {t("out")}: {r.clock_out ? formatTime(r.clock_out) : "—"}
+                  </span>
                 </div>
                 {r.notes ? (
                   <p className="text-xs text-muted-foreground">{r.notes}</p>

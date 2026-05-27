@@ -1,15 +1,23 @@
+import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { StatusBoard } from "@/components/dashboard/StatusBoard";
 import type { StatusCardEmployee } from "@/components/dashboard/StatusCard";
-import { todayISO } from "@/lib/utils/date";
-import { format } from "date-fns";
+import { todayISO, formatLocalized } from "@/lib/utils/date";
 import type { AttendanceStatus } from "@/types/app";
+import type { Locale as AppLocale } from "@/i18n/config";
 
-export const metadata = { title: "Status Board · Attendance Web" };
+export async function generateMetadata() {
+  const t = await getTranslations();
+  return {
+    title: `${t("dashboard.title")} · ${t("common.appName")}`,
+  };
+}
 
 export default async function HomePage() {
   const supabase = await createClient();
   const today = todayISO();
+  const locale = (await getLocale()) as AppLocale;
+  const t = await getTranslations("dashboard");
 
   const [{ data: profiles }, { data: attendance }, { data: sections }, { data: teams }] =
     await Promise.all([
@@ -53,9 +61,11 @@ export default async function HomePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Daily Status Board</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">
-          {format(new Date(), "EEEE, MMMM d, yyyy")} · live updates
+          {t("subtitle", {
+            date: formatLocalized(new Date(), "longDate", locale),
+          })}
         </p>
       </div>
       <StatusBoard employees={employees} />

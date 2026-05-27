@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
@@ -8,11 +9,12 @@ import {
   isAdmin,
 } from "@/lib/auth/permissions";
 import type { Profile, UserRole } from "@/types/app";
+import { translateZodIssue } from "@/lib/validations/translate";
 import { z } from "zod";
 
 const inviteSchema = z.object({
-  email: z.string().email(),
-  full_name: z.string().min(2),
+  email: z.string().email("validation.emailInvalid"),
+  full_name: z.string().min(2, "validation.fullNameMin"),
   role: z.enum([
     "admin",
     "hr_supervisor",
@@ -39,8 +41,9 @@ async function actor(): Promise<Profile | null> {
 }
 
 export async function inviteEmployee(formData: FormData) {
+  const tErr = await getTranslations("errors");
   const me = await actor();
-  if (!canRegisterEmployees(me?.role)) return { error: "Forbidden" };
+  if (!canRegisterEmployees(me?.role)) return { error: tErr("forbidden") };
 
   const parsed = inviteSchema.safeParse({
     email: formData.get("email"),
@@ -50,12 +53,12 @@ export async function inviteEmployee(formData: FormData) {
     team_id: formData.get("team_id") || undefined,
   });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
+    return { error: await translateZodIssue(parsed.error) };
   }
 
   // Non-admins can only invite employees, not promote.
   if (!isAdmin(me?.role) && parsed.data.role !== "employee") {
-    return { error: "Only admins can invite non-employee roles." };
+    return { error: tErr("adminOnlyInvite") };
   }
 
   const admin = createAdminClient();
@@ -70,7 +73,7 @@ export async function inviteEmployee(formData: FormData) {
     },
   );
   if (inviteErr || !invited.user) {
-    return { error: inviteErr?.message ?? "Failed to invite" };
+    return { error: inviteErr?.message ?? tErr("invitedFailed") };
   }
 
   // Trigger handle_new_auth_user has already created the profile row.
@@ -92,7 +95,7 @@ export async function inviteEmployee(formData: FormData) {
 
 const updateSchema = z.object({
   id: z.string().uuid(),
-  full_name: z.string().min(2),
+  full_name: z.string().min(2, "validation.fullNameMin"),
   role: z.enum([
     "admin",
     "hr_supervisor",
@@ -106,8 +109,9 @@ const updateSchema = z.object({
 });
 
 export async function updateEmployee(formData: FormData) {
+  const tErr = await getTranslations("errors");
   const me = await actor();
-  if (!canRegisterEmployees(me?.role)) return { error: "Forbidden" };
+  if (!canRegisterEmployees(me?.role)) return { error: tErr("forbidden") };
 
   const sectionRaw = formData.get("section_id");
   const teamRaw = formData.get("team_id");
@@ -121,7 +125,7 @@ export async function updateEmployee(formData: FormData) {
     is_active: formData.get("is_active") === "on",
   });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
+    return { error: await translateZodIssue(parsed.error) };
   }
 
   // Use admin client for the update so RLS column-lock triggers can be enforced

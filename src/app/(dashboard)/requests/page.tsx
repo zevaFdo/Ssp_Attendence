@@ -1,19 +1,27 @@
 import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { hasMasterView } from "@/lib/auth/permissions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RequestStatusBadge } from "@/components/requests/RequestStatusBadge";
-import { format, parseISO } from "date-fns";
+import { formatLocalized } from "@/lib/utils/date";
 import { Plus, FileText } from "lucide-react";
+import type { Locale as AppLocale } from "@/i18n/config";
 
-export const metadata = { title: "Requests · Attendance Web" };
+export async function generateMetadata() {
+  const t = await getTranslations();
+  return { title: t("requests.metaList") };
+}
 
 export default async function RequestsListPage() {
   const profile = await getCurrentProfile();
   if (!profile) return null;
   const masterView = hasMasterView(profile.role);
+  const t = await getTranslations("requests");
+  const tApprovals = await getTranslations("approvals.labels");
+  const locale = (await getLocale()) as AppLocale;
 
   const supabase = await createClient();
   let query = supabase
@@ -32,18 +40,16 @@ export default async function RequestsListPage() {
       <div className="flex items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">
-            {masterView ? "All Requests" : "My Requests"}
+            {masterView ? t("listTitleAll") : t("listTitleMine")}
           </h1>
           <p className="text-sm text-muted-foreground">
-            {masterView
-              ? "Every leave/late submission across the organization."
-              : "Your submitted leave and late-arrival requests."}
+            {masterView ? t("listSubtitleAll") : t("listSubtitleMine")}
           </p>
         </div>
         <Button asChild>
           <Link href="/requests/new">
             <Plus className="h-4 w-4" />
-            New request
+            {t("newRequest")}
           </Link>
         </Button>
       </div>
@@ -52,13 +58,12 @@ export default async function RequestsListPage() {
         <Card>
           <CardContent className="flex flex-col items-center gap-3 py-12 text-center">
             <FileText className="h-10 w-10 text-muted-foreground" />
-            <p className="font-medium">No requests yet</p>
+            <p className="font-medium">{t("emptyTitle")}</p>
             <p className="max-w-sm text-sm text-muted-foreground">
-              Submit a leave or late-arrival request and we’ll route it through
-              the approval workflow automatically.
+              {t("emptyBody")}
             </p>
             <Button asChild>
-              <Link href="/requests/new">Submit a request</Link>
+              <Link href="/requests/new">{t("submitRequest")}</Link>
             </Button>
           </CardContent>
         </Card>
@@ -86,14 +91,26 @@ export default async function RequestsListPage() {
                       {r.reason}
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      For {format(parseISO(r.date), "MMM d, yyyy")} · submitted{" "}
-                      {format(parseISO(r.created_at), "MMM d")}
+                      {t("for", {
+                        date: formatLocalized(r.date, "mediumDate", locale),
+                      })}{" "}
+                      ·{" "}
+                      {t("submitted", {
+                        date: formatLocalized(
+                          r.created_at,
+                          "shortDate",
+                          locale,
+                        ),
+                      })}
                     </p>
                   </div>
                   <div className="flex flex-col items-end gap-1.5">
-                    <RequestStatusBadge label="HR" status={r.hr_approval} />
                     <RequestStatusBadge
-                      label="Section Head"
+                      label={tApprovals("hr")}
+                      status={r.hr_approval}
+                    />
+                    <RequestStatusBadge
+                      label={tApprovals("sectionHead")}
                       status={r.section_head_approval}
                     />
                   </div>

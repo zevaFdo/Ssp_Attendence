@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,6 +24,9 @@ interface Props {
 }
 
 export function InviteEmployeeForm({ isAdmin, sections, teams }: Props) {
+  const t = useTranslations("employees.invite");
+  const tRoles = useTranslations("roles");
+
   const [role, setRole] = useState<UserRole>("employee");
   const [sectionId, setSectionId] = useState<string>("");
   const [teamId, setTeamId] = useState<string>("");
@@ -43,7 +47,7 @@ export function InviteEmployeeForm({ isAdmin, sections, teams }: Props) {
     startTransition(async () => {
       const result = await inviteEmployee(formData);
       if (result?.error) setError(result.error);
-      else setSuccess("Invitation sent. The user will receive an email.");
+      else setSuccess(t("sent"));
     });
   }
 
@@ -52,22 +56,19 @@ export function InviteEmployeeForm({ isAdmin, sections, teams }: Props) {
       <CardContent className="pt-6">
         <form action={onSubmit} className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2 md:col-span-2">
-            <h2 className="text-base font-semibold">Invite a new employee</h2>
-            <p className="text-xs text-muted-foreground">
-              They’ll receive a secure invite email and can set their password
-              on first sign-in.
-            </p>
+            <h2 className="text-base font-semibold">{t("title")}</h2>
+            <p className="text-xs text-muted-foreground">{t("subtitle")}</p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="full_name">Full name</Label>
+            <Label htmlFor="full_name">{t("fullName")}</Label>
             <Input id="full_name" name="full_name" required minLength={2} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t("email")}</Label>
             <Input id="email" name="email" type="email" required />
           </div>
           <div className="space-y-2">
-            <Label>Role</Label>
+            <Label>{t("role")}</Label>
             <Select
               value={role}
               onValueChange={(v) => setRole(v as UserRole)}
@@ -77,25 +78,31 @@ export function InviteEmployeeForm({ isAdmin, sections, teams }: Props) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="employee">Employee</SelectItem>
+                <SelectItem value="employee">{tRoles("employee")}</SelectItem>
                 {isAdmin ? (
                   <>
-                    <SelectItem value="team_leader">Team Leader</SelectItem>
-                    <SelectItem value="section_head">Section Head</SelectItem>
-                    <SelectItem value="hr_supervisor">HR Supervisor</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="team_leader">
+                      {tRoles("team_leader")}
+                    </SelectItem>
+                    <SelectItem value="section_head">
+                      {tRoles("section_head")}
+                    </SelectItem>
+                    <SelectItem value="hr_supervisor">
+                      {tRoles("hr_supervisor")}
+                    </SelectItem>
+                    <SelectItem value="admin">{tRoles("admin")}</SelectItem>
                   </>
                 ) : null}
               </SelectContent>
             </Select>
             {!isAdmin ? (
               <p className="text-xs text-muted-foreground">
-                Only admins can invite higher-level roles.
+                {t("adminOnlyHigherRoles")}
               </p>
             ) : null}
           </div>
           <div className="space-y-2">
-            <Label>Section</Label>
+            <Label>{t("section")}</Label>
             <Select
               value={sectionId}
               onValueChange={(v) => {
@@ -104,7 +111,7 @@ export function InviteEmployeeForm({ isAdmin, sections, teams }: Props) {
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select a section..." />
+                <SelectValue placeholder={t("selectSection")} />
               </SelectTrigger>
               <SelectContent>
                 {sections.map((s) => (
@@ -116,14 +123,14 @@ export function InviteEmployeeForm({ isAdmin, sections, teams }: Props) {
             </Select>
           </div>
           <div className="space-y-2 md:col-span-2">
-            <Label>Team (optional)</Label>
+            <Label>{t("team")}</Label>
             <Select
               value={teamId}
               onValueChange={setTeamId}
               disabled={!sectionId}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select a team..." />
+                <SelectValue placeholder={t("selectTeam")} />
               </SelectTrigger>
               <SelectContent>
                 {filteredTeams.map((t) => (
@@ -153,7 +160,7 @@ export function InviteEmployeeForm({ isAdmin, sections, teams }: Props) {
               ) : (
                 <UserPlus className="h-4 w-4" />
               )}
-              Send invite
+              {t("send")}
             </Button>
           </div>
         </form>

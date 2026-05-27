@@ -1,8 +1,13 @@
 import "server-only";
+import path from "node:path";
+import { existsSync } from "node:fs";
 import PDFDocument from "pdfkit";
-import { formatDateTime } from "@/lib/utils/date";
+import { getTranslations } from "next-intl/server";
+import { formatLocalized } from "@/lib/utils/date";
+import type { Locale } from "@/i18n/config";
 
 export interface RequestPdfData {
+  locale: Locale;
   request: {
     id: string;
     type: "leave" | "late";
@@ -23,36 +28,90 @@ export interface RequestPdfData {
   team: { name: string } | null;
 }
 
+const FONTS_DIR = path.join(
+  process.cwd(),
+  "src",
+  "lib",
+  "pdf",
+  "fonts",
+);
+
+const REGULAR_FONT_PATH = path.join(FONTS_DIR, "NotoSansJP-Regular.otf");
+const BOLD_FONT_PATH = path.join(FONTS_DIR, "NotoSansJP-Bold.otf");
+
+let fontsAvailable: boolean | null = null;
+function checkFonts(): boolean {
+  if (fontsAvailable !== null) return fontsAvailable;
+  fontsAvailable =
+    existsSync(REGULAR_FONT_PATH) && existsSync(BOLD_FONT_PATH);
+  if (!fontsAvailable) {
+    console.warn(
+      "[pdf.generator] Noto Sans JP fonts not found. " +
+        "Falling back to Helvetica — Japanese characters will not render.",
+    );
+  }
+  return fontsAvailable;
+}
+
+const FONT = {
+  regular: "Body",
+  bold: "BodyBold",
+} as const;
+
 /**
  * Build a clean approval PDF using pdfkit.
  * Returns a Buffer suitable for upload to Supabase Storage.
  */
 export async function buildRequestPdf(data: RequestPdfData): Promise<Buffer> {
+  const t = await getTranslations({
+    locale: data.locale,
+    namespace: "pdf",
+  });
+  const tRoles = await getTranslations({
+    locale: data.locale,
+    namespace: "roles",
+  });
+
+  const titleType =
+    data.request.type === "leave" ? t("leaveType") : t("lateType");
+
   return await new Promise((resolve, reject) => {
     try {
+      const useNoto = checkFonts();
       const doc = new PDFDocument({ size: "A4", margin: 56 });
       const chunks: Buffer[] = [];
       doc.on("data", (chunk) => chunks.push(chunk as Buffer));
       doc.on("end", () => resolve(Buffer.concat(chunks)));
       doc.on("error", reject);
 
-      const titleType =
-        data.request.type === "leave" ? "Leave Request" : "Late Arrival";
+      if (useNoto) {
+        doc.registerFont(FONT.regular, REGULAR_FONT_PATH);
+        doc.registerFont(FONT.bold, BOLD_FONT_PATH);
+      } else {
+        // Helvetica is built-in; alias under our names so the body code
+        // doesn't have to care which font is in use.
+        doc.registerFont(FONT.regular, "Helvetica");
+        doc.registerFont(FONT.bold, "Helvetica-Bold");
+      }
 
       // Header
       doc
         .fillColor("#0f172a")
         .fontSize(22)
-        .font("Helvetica-Bold")
-        .text(`Approved ${titleType}`, { align: "left" });
+        .font(FONT.bold)
+        .text(t("approvedTitle", { type: titleType }), { align: "left" });
 
       doc
         .moveDown(0.25)
         .fillColor("#475569")
         .fontSize(10)
-        .font("Helvetica")
-        .text(`Request ID: ${data.request.id}`)
-        .text(`Generated: ${formatDateTime(new Date())}`);
+        .font(FONT.regular)
+        .text(t("requestId", { id: data.request.id }))
+        .text(
+          t("generated", {
+            date: formatLocalized(new Date(), "mediumDate", data.locale),
+          }),
+        );
 
       doc.moveDown();
       doc
@@ -64,47 +123,55 @@ export async function buildRequestPdf(data: RequestPdfData): Promise<Buffer> {
       doc.moveDown();
 
       // Employee info
-      sectionHeader(doc, "Employee");
-      kv(doc, "Name", data.employee.full_name);
-      kv(doc, "Email", data.employee.email);
-      kv(doc, "Role", data.employee.role);
-      if (data.section) kv(doc, "Section", data.section.name);
-      if (data.team) kv(doc, "Team", data.team.name);
+      sectionHeader(doc, t("section_employee"));
+      kv(doc, t("label_name"), data.employee.full_name);
+      kv(doc, t("label_email"), data.employee.email);
+      kv(doc, t("label_role"), tRoles(data.employee.role));
+      if (data.section) kv(doc, t("label_section"), data.section.name);
+      if (data.team) kv(doc, t("label_team"), data.team.name);
 
       doc.moveDown();
-      sectionHeader(doc, "Request");
-      kv(doc, "Type", titleType);
-      kv(doc, "Date", data.request.date);
-      kv(doc, "Submitted", formatDateTime(data.request.created_at));
+      sectionHeader(doc, t("section_request"));
+      kv(doc, t("label_type"), titleType);
+      kv(
+        doc,
+        t("label_date"),
+        formatLocalized(data.request.date, "mediumDate", data.locale),
+      );
+      kv(
+        doc,
+        t("label_submitted"),
+        formatLocalized(data.request.created_at, "mediumDate", data.locale),
+      );
       doc.moveDown(0.4);
       doc
         .fillColor("#0f172a")
-        .font("Helvetica-Bold")
+        .font(FONT.bold)
         .fontSize(11)
-        .text("Reason");
+        .text(t("label_reason"));
       doc
         .moveDown(0.2)
-        .font("Helvetica")
+        .font(FONT.regular)
         .fontSize(11)
         .fillColor("#1e293b")
         .text(data.request.reason, { align: "left" });
 
       doc.moveDown();
-      sectionHeader(doc, "Approvals");
+      sectionHeader(doc, t("section_approvals"));
       kv(
         doc,
-        "HR Approval",
+        t("label_hr_approval"),
         `${data.hrApprover?.full_name ?? "—"}` +
           (data.request.hr_approved_at
-            ? `  ·  ${formatDateTime(data.request.hr_approved_at)}`
+            ? `  ·  ${formatLocalized(data.request.hr_approved_at, "shortDateTime", data.locale)}`
             : ""),
       );
       kv(
         doc,
-        "Section Head Approval",
+        t("label_section_head_approval"),
         `${data.sectionHeadApprover?.full_name ?? "—"}` +
           (data.request.section_head_approved_at
-            ? `  ·  ${formatDateTime(data.request.section_head_approved_at)}`
+            ? `  ·  ${formatLocalized(data.request.section_head_approved_at, "shortDateTime", data.locale)}`
             : ""),
       );
 
@@ -113,10 +180,7 @@ export async function buildRequestPdf(data: RequestPdfData): Promise<Buffer> {
       doc
         .fontSize(9)
         .fillColor("#94a3b8")
-        .text(
-          "This document was generated automatically by the Attendance Web system.",
-          { align: "center" },
-        );
+        .text(t("footer"), { align: "center" });
 
       doc.end();
     } catch (err) {
@@ -128,7 +192,7 @@ export async function buildRequestPdf(data: RequestPdfData): Promise<Buffer> {
 function sectionHeader(doc: PDFKit.PDFDocument, label: string) {
   doc
     .fillColor("#2563eb")
-    .font("Helvetica-Bold")
+    .font(FONT.bold)
     .fontSize(13)
     .text(label.toUpperCase(), { characterSpacing: 1 });
   doc.moveDown(0.4);
@@ -137,12 +201,12 @@ function sectionHeader(doc: PDFKit.PDFDocument, label: string) {
 function kv(doc: PDFKit.PDFDocument, key: string, value: string) {
   const startX = doc.x;
   doc
-    .font("Helvetica-Bold")
+    .font(FONT.bold)
     .fontSize(11)
     .fillColor("#475569")
     .text(`${key}: `, { continued: true });
   doc
-    .font("Helvetica")
+    .font(FONT.regular)
     .fillColor("#0f172a")
     .text(value);
   doc.x = startX;

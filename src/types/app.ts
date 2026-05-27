@@ -10,7 +10,11 @@ export type AttendanceStatus =
   | "late"
   | "absent"
   | "wfh"
-  | "on_leave";
+  | "on_leave"
+  | "meeting"
+  | "break"
+  | "out_of_office"
+  | "clocked_out";
 
 export type RequestType = "leave" | "late";
 
@@ -26,6 +30,7 @@ export interface Profile {
   phone: string | null;
   avatar_url: string | null;
   is_active: boolean;
+  preferred_language: "ja" | "en";
   created_at: string;
   updated_at: string;
 }
@@ -88,10 +93,10 @@ export interface NotificationRecord {
   created_at: string;
 }
 
-export const ROLE_LABELS: Record<UserRole, string> = {
-  admin: "Admin",
-  hr_supervisor: "HR Supervisor",
-  section_head: "Section Head",
-  team_leader: "Team Leader",
-  employee: "Employee",
-};
+export const ROLE_VALUES: UserRole[] = [
+  "admin",
+  "hr_supervisor",
+  "section_head",
+  "team_leader",
+  "employee",
+];

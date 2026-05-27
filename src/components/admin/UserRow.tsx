@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,6 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { initials } from "@/lib/utils/format";
 import { updateEmployee } from "@/actions/employees";
 import { Loader2, Save } from "lucide-react";
+import { ROLE_VALUES } from "@/types/app";
 import type { Profile, Section, Team, UserRole } from "@/types/app";
 
 interface Props {
@@ -23,6 +25,10 @@ interface Props {
 }
 
 export function UserRow({ profile, sections, teams }: Props) {
+  const tCommon = useTranslations("common");
+  const tAdmin = useTranslations("admin.users");
+  const tRoles = useTranslations("roles");
+
   const [fullName, setFullName] = useState(profile.full_name);
   const [role, setRole] = useState<UserRole>(profile.role);
   const [sectionId, setSectionId] = useState(profile.section_id ?? "");
@@ -79,11 +85,11 @@ export function UserRow({ profile, sections, teams }: Props) {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="admin">Admin</SelectItem>
-            <SelectItem value="hr_supervisor">HR Supervisor</SelectItem>
-            <SelectItem value="section_head">Section Head</SelectItem>
-            <SelectItem value="team_leader">Team Leader</SelectItem>
-            <SelectItem value="employee">Employee</SelectItem>
+            {ROLE_VALUES.map((r) => (
+              <SelectItem key={r} value={r}>
+                {tRoles(r)}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </td>
@@ -129,7 +135,7 @@ export function UserRow({ profile, sections, teams }: Props) {
             onChange={(e) => setIsActive(e.target.checked)}
             className="h-4 w-4"
           />
-          Active
+          {tAdmin("active")}
         </label>
       </td>
       <td className="px-3 py-3">
@@ -139,12 +145,12 @@ export function UserRow({ profile, sections, teams }: Props) {
           ) : (
             <Save className="h-3.5 w-3.5" />
           )}
-          Save
+          {tCommon("save")}
         </Button>
         {error ? (
           <p className="mt-1 text-xs text-rose-700">{error}</p>
         ) : ok ? (
-          <p className="mt-1 text-xs text-emerald-700">Saved</p>
+          <p className="mt-1 text-xs text-emerald-700">{tCommon("saved")}</p>
         ) : null}
       </td>
     </tr>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +23,9 @@ interface Props {
 }
 
 export function SectionForm({ section, candidates }: Props) {
+  const tCommon = useTranslations("common");
+  const tSections = useTranslations("admin.sections");
+
   const [name, setName] = useState(section?.name ?? "");
   const [description, setDescription] = useState(section?.description ?? "");
   const [headId, setHeadId] = useState(section?.section_head_id ?? "");
@@ -44,8 +48,7 @@ export function SectionForm({ section, candidates }: Props) {
 
   function remove() {
     if (!section?.id) return;
-    if (!confirm(`Delete section "${section.name}"? Teams will be removed.`))
-      return;
+    if (!confirm(tSections("deleteConfirm", { name: section.name }))) return;
     startDelete(async () => {
       const fd = new FormData();
       fd.set("id", section.id);
@@ -58,11 +61,11 @@ export function SectionForm({ section, candidates }: Props) {
     <div className="space-y-3 rounded-lg border bg-card p-4">
       <div className="grid gap-3 md:grid-cols-2">
         <div className="space-y-1.5">
-          <Label className="text-xs">Name</Label>
+          <Label className="text-xs">{tSections("name")}</Label>
           <Input value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs">Section Head</Label>
+          <Label className="text-xs">{tSections("head")}</Label>
           <Select value={headId} onValueChange={setHeadId}>
             <SelectTrigger>
               <SelectValue placeholder="—" />
@@ -78,7 +81,7 @@ export function SectionForm({ section, candidates }: Props) {
         </div>
       </div>
       <div className="space-y-1.5">
-        <Label className="text-xs">Description</Label>
+        <Label className="text-xs">{tSections("description")}</Label>
         <Textarea
           rows={2}
           value={description ?? ""}
@@ -97,7 +100,7 @@ export function SectionForm({ section, candidates }: Props) {
           ) : (
             <Save className="h-3.5 w-3.5" />
           )}
-          Save
+          {tCommon("save")}
         </Button>
         {section?.id ? (
           <Button
@@ -107,7 +110,7 @@ export function SectionForm({ section, candidates }: Props) {
             disabled={isDeleting}
           >
             <Trash2 className="h-3.5 w-3.5" />
-            Delete
+            {tCommon("delete")}
           </Button>
         ) : null}
       </div>

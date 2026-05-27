@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth/session";
 import {
@@ -10,10 +11,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ApprovalActions } from "@/components/requests/ApprovalActions";
 import { RequestStatusBadge } from "@/components/requests/RequestStatusBadge";
-import { format, parseISO } from "date-fns";
+import { formatLocalized } from "@/lib/utils/date";
 import { Download, FileText, ArrowLeft } from "lucide-react";
+import type { Locale as AppLocale } from "@/i18n/config";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata() {
+  const t = await getTranslations();
+  return { title: t("requests.metaDetail") };
+}
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -51,13 +58,17 @@ export default async function RequestDetailPage({ params }: PageProps) {
   const fullyApproved =
     r.hr_approval === "approved" && r.section_head_approval === "approved";
 
+  const t = await getTranslations("requests.detail");
+  const tApprovals = await getTranslations("approvals.labels");
+  const locale = (await getLocale()) as AppLocale;
+
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
         <Button asChild variant="ghost" size="sm">
           <Link href="/requests">
             <ArrowLeft className="h-4 w-4" />
-            Back to requests
+            {t("back")}
           </Link>
         </Button>
       </div>
@@ -77,9 +88,12 @@ export default async function RequestDetailPage({ params }: PageProps) {
               </p>
             </div>
             <div className="flex flex-col gap-2">
-              <RequestStatusBadge label="HR" status={r.hr_approval} />
               <RequestStatusBadge
-                label="Section Head"
+                label={tApprovals("hr")}
+                status={r.hr_approval}
+              />
+              <RequestStatusBadge
+                label={tApprovals("sectionHead")}
                 status={r.section_head_approval}
               />
             </div>
@@ -87,22 +101,22 @@ export default async function RequestDetailPage({ params }: PageProps) {
 
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div>
-              <p className="text-xs text-muted-foreground">Date</p>
+              <p className="text-xs text-muted-foreground">{t("date")}</p>
               <p className="font-medium">
-                {format(parseISO(r.date), "MMM d, yyyy")}
+                {formatLocalized(r.date, "mediumDate", locale)}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Submitted</p>
+              <p className="text-xs text-muted-foreground">{t("submitted")}</p>
               <p className="font-medium">
-                {format(parseISO(r.created_at), "MMM d, yyyy HH:mm")}
+                {formatLocalized(r.created_at, "mediumDate", locale)}
               </p>
             </div>
           </div>
 
           <div>
             <p className="text-xs uppercase tracking-wide text-muted-foreground">
-              Reason
+              {t("reason")}
             </p>
             <p className="mt-1 whitespace-pre-line rounded-md bg-muted/50 p-3 text-sm">
               {r.reason}
@@ -112,13 +126,14 @@ export default async function RequestDetailPage({ params }: PageProps) {
           <div className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2">
             <div>
               <p className="text-xs uppercase text-muted-foreground">
-                HR Decision
+                {t("hrDecision")}
               </p>
               <p className="text-sm">
-                {r.hr?.full_name ?? "Awaiting"}
+                {r.hr?.full_name ?? t("awaiting")}
                 {r.hr_approved_at ? (
                   <span className="ml-1 text-xs text-muted-foreground">
-                    · {format(parseISO(r.hr_approved_at), "MMM d HH:mm")}
+                    ·{" "}
+                    {formatLocalized(r.hr_approved_at, "shortDateTime", locale)}
                   </span>
                 ) : null}
               </p>
@@ -130,14 +145,18 @@ export default async function RequestDetailPage({ params }: PageProps) {
             </div>
             <div>
               <p className="text-xs uppercase text-muted-foreground">
-                Section Head Decision
+                {t("sectionHeadDecision")}
               </p>
               <p className="text-sm">
-                {r.sh?.full_name ?? "Awaiting"}
+                {r.sh?.full_name ?? t("awaiting")}
                 {r.section_head_approved_at ? (
                   <span className="ml-1 text-xs text-muted-foreground">
                     ·{" "}
-                    {format(parseISO(r.section_head_approved_at), "MMM d HH:mm")}
+                    {formatLocalized(
+                      r.section_head_approved_at,
+                      "shortDateTime",
+                      locale,
+                    )}
                   </span>
                 ) : null}
               </p>
@@ -148,7 +167,7 @@ export default async function RequestDetailPage({ params }: PageProps) {
               ) : null}
               {!canSH && r.hr_approval !== "approved" ? (
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Available after HR approval.
+                  {t("shAvailableAfterHr")}
                 </p>
               ) : null}
             </div>
@@ -160,10 +179,10 @@ export default async function RequestDetailPage({ params }: PageProps) {
                 <FileText className="h-5 w-5 text-emerald-700" />
                 <div>
                   <p className="text-sm font-semibold text-emerald-900">
-                    Approval document ready
+                    {t("approvalDocumentReady")}
                   </p>
                   <p className="text-xs text-emerald-800">
-                    PDF stored in Supabase Storage.
+                    {t("approvalDocumentSubtitle")}
                   </p>
                 </div>
               </div>
@@ -171,12 +190,12 @@ export default async function RequestDetailPage({ params }: PageProps) {
                 <Button asChild>
                   <Link href={`/api/requests/${r.id}/pdf`}>
                     <Download className="h-4 w-4" />
-                    Download PDF
+                    {t("downloadPdf")}
                   </Link>
                 </Button>
               ) : (
                 <span className="text-xs text-emerald-800">
-                  Generating…
+                  {t("generating")}
                 </span>
               )}
             </div>

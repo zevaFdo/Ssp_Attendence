@@ -1,6 +1,9 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import {
   ATTENDANCE_STATUS_CLASSES,
-  ATTENDANCE_STATUS_LABEL,
+  ATTENDANCE_STATUS_DOT_CLASSES,
 } from "@/lib/utils/status";
 import { cn } from "@/lib/utils";
 import type { AttendanceStatus } from "@/types/app";
@@ -11,6 +14,7 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
+  const t = useTranslations("attendanceStatus");
   const effective: AttendanceStatus = status ?? "absent";
   return (
     <span
@@ -23,14 +27,10 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
       <span
         className={cn(
           "mr-1.5 h-1.5 w-1.5 rounded-full",
-          effective === "present" && "bg-emerald-500",
-          effective === "wfh" && "bg-sky-500",
-          effective === "late" && "bg-orange-500",
-          effective === "on_leave" && "bg-slate-500",
-          effective === "absent" && "bg-zinc-400",
+          ATTENDANCE_STATUS_DOT_CLASSES[effective],
         )}
       />
-      {ATTENDANCE_STATUS_LABEL[effective]}
+      {t(effective)}
     </span>
   );
 }

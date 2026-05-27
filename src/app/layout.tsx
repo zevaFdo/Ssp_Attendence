@@ -1,20 +1,24 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
-export const metadata: Metadata = {
-  title: "Attendance Web",
-  description:
-    "Employee attendance, leave & late requests, and approvals — mobile-first.",
-  applicationName: "Attendance Web",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "Attendance Web",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("common");
+  return {
+    title: t("appName"),
+    description: t("appDescription"),
+    applicationName: t("appName"),
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: t("appName"),
+    },
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -24,15 +28,20 @@ export const viewport: Viewport = {
   themeColor: "#2563eb",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body className={inter.className} suppressHydrationWarning>
-        {children}
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          {children}
+        </NextIntlClientProvider>
       </body>
     </html>
   );

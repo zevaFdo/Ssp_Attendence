@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { NotificationItem } from "@/components/notifications/NotificationItem";
@@ -7,12 +8,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { markAllRead } from "@/actions/notifications";
 import { Bell, CheckCheck } from "lucide-react";
 
-export const metadata = { title: "Notifications · Attendance Web" };
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata() {
+  const t = await getTranslations();
+  return { title: t("notifications.metaTitle") };
+}
 
 export default async function NotificationsPage() {
   const profile = await getCurrentProfile();
   if (!profile) return null;
+
+  const t = await getTranslations("notifications");
+  const tCommon = await getTranslations("common");
 
   const supabase = await createClient();
   const { data: rows } = await supabase
@@ -30,16 +38,16 @@ export default async function NotificationsPage() {
 
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Notifications</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">
-            {unread > 0 ? `${unread} unread` : "All caught up."}
+            {unread > 0 ? t("unread", { count: unread }) : tCommon("all_caught_up")}
           </p>
         </div>
         {unread > 0 ? (
           <form action={markAllRead}>
             <Button variant="outline" type="submit">
               <CheckCheck className="h-4 w-4" />
-              Mark all read
+              {t("markAllRead")}
             </Button>
           </form>
         ) : null}
@@ -49,10 +57,8 @@ export default async function NotificationsPage() {
         <Card>
           <CardContent className="flex flex-col items-center gap-3 py-12 text-center">
             <Bell className="h-10 w-10 text-muted-foreground" />
-            <p className="font-medium">No notifications</p>
-            <p className="text-sm text-muted-foreground">
-              You’ll see request approvals and other updates here.
-            </p>
+            <p className="font-medium">{t("emptyTitle")}</p>
+            <p className="text-sm text-muted-foreground">{t("emptyBody")}</p>
           </CardContent>
         </Card>
       ) : (

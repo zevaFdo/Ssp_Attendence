@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { hrDecide, sectionHeadDecide } from "@/actions/approvals";
 import { Check, X, Loader2 } from "lucide-react";
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function ApprovalActions({ requestId, stage, disabled }: Props) {
+  const t = useTranslations("approvals");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -41,7 +43,7 @@ export function ApprovalActions({ requestId, stage, disabled }: Props) {
           ) : (
             <Check className="h-4 w-4" />
           )}
-          Approve
+          {t("approve")}
         </Button>
         <Button
           variant="destructive"
@@ -50,7 +52,7 @@ export function ApprovalActions({ requestId, stage, disabled }: Props) {
           disabled={disabled || isPending}
         >
           <X className="h-4 w-4" />
-          Reject
+          {t("reject")}
         </Button>
       </div>
       {error ? (

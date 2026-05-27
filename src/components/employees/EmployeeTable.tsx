@@ -1,4 +1,6 @@
-import { ROLE_LABELS } from "@/types/app";
+"use client";
+
+import { useTranslations } from "next-intl";
 import type { Profile, Section, Team } from "@/types/app";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { initials } from "@/lib/utils/format";
@@ -11,13 +13,16 @@ interface Props {
 }
 
 export function EmployeeTable({ employees, sections, teams }: Props) {
+  const t = useTranslations("employees.table");
+  const tRoles = useTranslations("roles");
+
   const sectionMap = new Map(sections.map((s) => [s.id, s.name]));
   const teamMap = new Map(teams.map((t) => [t.id, t.name]));
 
   if (employees.length === 0) {
     return (
       <div className="rounded-lg border border-dashed p-10 text-center text-sm text-muted-foreground">
-        No employees found.
+        {t("noEmployees")}
       </div>
     );
   }
@@ -27,11 +32,11 @@ export function EmployeeTable({ employees, sections, teams }: Props) {
       <table className="w-full text-sm">
         <thead className="bg-muted text-left text-xs uppercase tracking-wide text-muted-foreground">
           <tr>
-            <th className="px-4 py-3">Employee</th>
-            <th className="px-4 py-3">Role</th>
-            <th className="px-4 py-3">Section</th>
-            <th className="px-4 py-3">Team</th>
-            <th className="px-4 py-3">Status</th>
+            <th className="px-4 py-3">{t("employee")}</th>
+            <th className="px-4 py-3">{t("role")}</th>
+            <th className="px-4 py-3">{t("section")}</th>
+            <th className="px-4 py-3">{t("team")}</th>
+            <th className="px-4 py-3">{t("status")}</th>
           </tr>
         </thead>
         <tbody className="divide-y">
@@ -54,7 +59,7 @@ export function EmployeeTable({ employees, sections, teams }: Props) {
                 </div>
               </td>
               <td className="px-4 py-3">
-                <Badge variant="outline">{ROLE_LABELS[e.role]}</Badge>
+                <Badge variant="outline">{tRoles(e.role)}</Badge>
               </td>
               <td className="px-4 py-3 text-muted-foreground">
                 {e.section_id ? (sectionMap.get(e.section_id) ?? "—") : "—"}
@@ -65,11 +70,11 @@ export function EmployeeTable({ employees, sections, teams }: Props) {
               <td className="px-4 py-3">
                 {e.is_active ? (
                   <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800 ring-1 ring-emerald-600/20">
-                    Active
+                    {t("active")}
                   </span>
                 ) : (
                   <span className="inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-700 ring-1 ring-zinc-500/20">
-                    Inactive
+                    {t("inactive")}
                   </span>
                 )}
               </td>

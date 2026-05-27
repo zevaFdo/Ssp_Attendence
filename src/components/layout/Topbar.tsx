@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +13,7 @@ import { initials } from "@/lib/utils/format";
 import { LogOut, Bell, Clock as ClockIcon } from "lucide-react";
 import { signOut } from "@/actions/auth";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
-import { ROLE_LABELS } from "@/types/app";
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 import type { Profile } from "@/types/app";
 
 interface TopbarProps {
@@ -20,30 +21,38 @@ interface TopbarProps {
   unreadCount: number;
 }
 
-export function Topbar({ profile, unreadCount }: TopbarProps) {
+export async function Topbar({ profile, unreadCount }: TopbarProps) {
+  const tCommon = await getTranslations("common");
+  const tRoles = await getTranslations("roles");
+  const tNotif = await getTranslations("notifications");
+
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b bg-card/80 px-4 backdrop-blur md:px-6">
       <div className="flex items-center gap-2 md:hidden">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
           <ClockIcon className="h-5 w-5" />
         </div>
-        <p className="text-sm font-semibold">Attendance Web</p>
+        <p className="text-sm font-semibold">{tCommon("appName")}</p>
       </div>
 
       <div className="hidden md:block">
         <p className="text-sm text-muted-foreground">
-          Welcome back,{" "}
-          <span className="font-medium text-foreground">
-            {profile.full_name}
-          </span>
+          {tCommon.rich("welcomeBack", {
+            name: profile.full_name,
+            b: (chunks) => (
+              <span className="font-medium text-foreground">{chunks}</span>
+            ),
+          })}
         </p>
       </div>
 
       <div className="flex items-center gap-2">
+        <LanguageSwitcher variant="compact" className="hidden sm:inline-flex" />
+
         <Link
           href="/notifications"
           className="relative inline-flex h-10 w-10 items-center justify-center rounded-md hover:bg-accent"
-          aria-label="Notifications"
+          aria-label={tNotif("ariaLabel")}
         >
           <Bell className="h-5 w-5" />
           <NotificationBell initialCount={unreadCount} />
@@ -66,7 +75,7 @@ export function Topbar({ profile, unreadCount }: TopbarProps) {
                   {profile.email}
                 </span>
                 <span className="mt-1 text-xs text-primary">
-                  {ROLE_LABELS[profile.role]}
+                  {tRoles(profile.role)}
                 </span>
               </div>
             </DropdownMenuLabel>
@@ -78,7 +87,7 @@ export function Topbar({ profile, unreadCount }: TopbarProps) {
                   className="flex w-full items-center gap-2"
                 >
                   <LogOut className="h-4 w-4" />
-                  Sign out
+                  {tCommon("signOut")}
                 </button>
               </DropdownMenuItem>
             </form>

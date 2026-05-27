@@ -1,0 +1,337 @@
+{
+  "common": {
+    "appName": "勤怠ウェブ",
+    "appDescription": "従業員の勤怠、休暇・遅刻申請、承認をモバイルファーストで管理。",
+    "save": "保存",
+    "saved": "保存しました",
+    "cancel": "キャンセル",
+    "submit": "送信",
+    "delete": "削除",
+    "back": "戻る",
+    "loading": "読み込み中...",
+    "today": "本日",
+    "all_caught_up": "未読はありません。",
+    "signedInAs": "サインイン中",
+    "signOut": "サインアウト",
+    "welcomeBack": "おかえりなさい、<b>{name}</b>さん",
+    "language": "言語",
+    "japanese": "日本語",
+    "english": "English"
+  },
+  "locales": {
+    "ja": "日本語",
+    "en": "English"
+  },
+  "nav": {
+    "statusBoard": "ステータスボード",
+    "clockInOut": "出退勤",
+    "attendance": "勤怠履歴",
+    "requests": "申請",
+    "approvals": "承認",
+    "myTeam": "マイチーム",
+    "employees": "従業員",
+    "notifications": "通知",
+    "adminUsers": "管理 · ユーザー",
+    "adminSections": "管理 · 部署",
+    "adminTeams": "管理 · チーム",
+    "mobileLabels": {
+      "statusBoard": "ホーム",
+      "clockInOut": "出退勤",
+      "requests": "申請",
+      "notifications": "通知"
+    }
+  },
+  "roles": {
+    "admin": "管理者",
+    "hr_supervisor": "人事担当",
+    "section_head": "部署長",
+    "team_leader": "チームリーダー",
+    "employee": "従業員"
+  },
+  "attendanceStatus": {
+    "present": "在席",
+    "late": "遅刻",
+    "absent": "欠勤",
+    "wfh": "在宅勤務",
+    "on_leave": "休暇",
+    "meeting": "会議中",
+    "break": "休憩中",
+    "out_of_office": "外出中",
+    "clocked_out": "退勤済み"
+  },
+  "approvalStatus": {
+    "pending": "保留中",
+    "approved": "承認済み",
+    "rejected": "却下"
+  },
+  "auth": {
+    "welcomeBack": "おかえりなさい",
+    "signInPrompt": "勤怠ウェブのアカウントにサインインしてください",
+    "email": "メールアドレス",
+    "emailPlaceholder": "you@example.com",
+    "password": "パスワード",
+    "passwordPlaceholder": "••••••••",
+    "signIn": "サインイン",
+    "signingIn": "サインイン中...",
+    "inviteOnly": "新規ユーザーは管理者からの招待が必要です。"
+  },
+  "dashboard": {
+    "title": "本日のステータスボード",
+    "subtitle": "{date}・リアルタイム更新",
+    "empty": "従業員がまだ登録されていません。管理者は「管理 → ユーザー」ページから追加できます。",
+    "counts": {
+      "present": "在席 {count}",
+      "wfh": "在宅 {count}",
+      "meeting": "会議中 {count}",
+      "break": "休憩中 {count}",
+      "out_of_office": "外出中 {count}",
+      "clocked_out": "退勤済み {count}",
+      "late": "遅刻 {count}",
+      "on_leave": "休暇 {count}",
+      "absent": "欠勤 {count}"
+    },
+    "noSection": "部署未設定",
+    "in": "出勤",
+    "out": "退勤"
+  },
+  "attendance": {
+    "title": "マイ勤怠",
+    "today": "本日",
+    "chooseStatus": "現在のステータスを選択",
+    "alreadyDone": "本日の退勤は完了しました。お疲れ様でした。",
+    "clockInLabel": "出勤時刻",
+    "clockOutLabel": "退勤時刻",
+    "reviewTitle": "履歴を確認しますか?",
+    "reviewSubtitle": "日付フィルター付きで全勤怠履歴を確認できます。",
+    "viewHistory": "履歴を見る",
+    "history": {
+      "title": "勤怠履歴",
+      "masterSubtitle": "全社ビュー — 日付や名前で絞り込みできます。",
+      "selfSubtitle": "あなたの勤怠記録です。",
+      "from": "開始日",
+      "to": "終了日",
+      "searchByName": "従業員名で検索",
+      "searchPlaceholder": "名前を入力...",
+      "apply": "適用",
+      "reset": "リセット",
+      "employee": "従業員",
+      "date": "日付",
+      "status": "ステータス",
+      "in": "出勤",
+      "out": "退勤",
+      "notes": "備考",
+      "noRecords": "該当する記録がありません。"
+    }
+  },
+  "requests": {
+    "metaList": "申請 · 勤怠ウェブ",
+    "metaNew": "新規申請 · 勤怠ウェブ",
+    "metaDetail": "申請詳細 · 勤怠ウェブ",
+    "listTitleAll": "全申請",
+    "listTitleMine": "マイ申請",
+    "listSubtitleAll": "全社の休暇/遅刻申請です。",
+    "listSubtitleMine": "あなたが提出した休暇・遅刻申請です。",
+    "newRequest": "新規申請",
+    "submitRequest": "申請する",
+    "emptyTitle": "申請はまだありません",
+    "emptyBody": "休暇または遅刻申請を提出すると、自動的に承認ワークフローに送られます。",
+    "submitted": "提出: {date}",
+    "for": "対象日: {date}",
+    "newPageTitle": "新規申請",
+    "newPageSubtitle": "休暇または遅刻申請を提出します。HRに即時通知され、HR承認後に部署長へ送られます。",
+    "form": {
+      "type": "申請種別",
+      "leave": "休暇申請",
+      "late": "遅刻申請",
+      "date": "日付",
+      "reason": "理由",
+      "reasonPlaceholder": "申請の理由を簡潔に記入してください...",
+      "reasonHint": "5〜1000文字。HRがすぐに確認します。",
+      "submit": "申請を送信"
+    },
+    "detail": {
+      "back": "申請一覧に戻る",
+      "date": "日付",
+      "submitted": "提出日時",
+      "reason": "理由",
+      "hrDecision": "HRの判定",
+      "sectionHeadDecision": "部署長の判定",
+      "awaiting": "待機中",
+      "shAvailableAfterHr": "HR承認後に表示されます。",
+      "approvalDocumentReady": "承認書類の準備ができました",
+      "approvalDocumentSubtitle": "PDFはSupabaseストレージに保存されています。",
+      "downloadPdf": "PDFをダウンロード",
+      "generating": "生成中..."
+    }
+  },
+  "approvals": {
+    "metaTitle": "承認 · 勤怠ウェブ",
+    "title": "承認ボックス",
+    "subtitle": "保留中の休暇・遅刻申請を確認します。",
+    "hrQueue": "HRキュー · {count}",
+    "shQueue": "部署長キュー · {count}",
+    "recentlyDecided": "最近の判定",
+    "noHrPending": "HR確認待ちの申請はありません。",
+    "noShPending": "部署長確認待ちの申請はありません。",
+    "nothingDecided": "まだ判定はありません。",
+    "approve": "承認",
+    "reject": "却下",
+    "labels": {
+      "hr": "HR",
+      "sectionHead": "部署長"
+    }
+  },
+  "team": {
+    "metaTitle": "マイチーム · 勤怠ウェブ",
+    "title": "マイチーム",
+    "todaysStatus": "本日のステータス",
+    "noTeamAssigned": "まだチームに割り当てられていません。",
+    "askAdmin": "管理者にチームへの割り当てを依頼してください。",
+    "noMembers": "チームメンバーがいません。",
+    "set": "設定",
+    "saved": "保存しました"
+  },
+  "employees": {
+    "metaTitle": "従業員 · 勤怠ウェブ",
+    "title": "従業員",
+    "subtitle": "従業員を招待し、所属を管理します。",
+    "table": {
+      "employee": "従業員",
+      "role": "役職",
+      "section": "部署",
+      "team": "チーム",
+      "status": "ステータス",
+      "active": "有効",
+      "inactive": "無効",
+      "noEmployees": "従業員が見つかりません。"
+    },
+    "invite": {
+      "title": "新しい従業員を招待",
+      "subtitle": "招待メールが送信され、初回サインイン時にパスワードを設定できます。",
+      "fullName": "氏名",
+      "email": "メールアドレス",
+      "role": "役職",
+      "section": "部署",
+      "selectSection": "部署を選択...",
+      "team": "チーム(任意)",
+      "selectTeam": "チームを選択...",
+      "adminOnlyHigherRoles": "管理者のみ上位役職への招待が可能です。",
+      "send": "招待を送信",
+      "sent": "招待を送信しました。ユーザーにメールが届きます。"
+    }
+  },
+  "admin": {
+    "users": {
+      "metaTitle": "管理 · ユーザー",
+      "title": "管理 · ユーザー",
+      "subtitle": "役職の変更、所属の割り当て、アカウントの無効化が行えます。",
+      "active": "有効"
+    },
+    "sections": {
+      "metaTitle": "管理 · 部署",
+      "title": "管理 · 部署",
+      "subtitle": "部署と部署長を管理します。",
+      "newSection": "新規部署",
+      "existingSections": "既存の部署",
+      "name": "部署名",
+      "head": "部署長",
+      "description": "説明",
+      "deleteConfirm": "部署「{name}」を削除しますか? 配下のチームも削除されます。"
+    },
+    "teams": {
+      "metaTitle": "管理 · チーム",
+      "title": "管理 · チーム",
+      "subtitle": "チームを編成し、チームリーダーを割り当てます。",
+      "newTeam": "新規チーム",
+      "existingTeams": "既存のチーム",
+      "name": "チーム名",
+      "section": "部署",
+      "selectSection": "部署を選択...",
+      "leader": "チームリーダー",
+      "deleteConfirm": "チーム「{name}」を削除しますか?"
+    }
+  },
+  "notifications": {
+    "metaTitle": "通知 · 勤怠ウェブ",
+    "title": "通知",
+    "unread": "{count}件未読",
+    "markAllRead": "すべて既読にする",
+    "emptyTitle": "通知はありません",
+    "emptyBody": "申請の承認や更新がここに表示されます。",
+    "openRequest": "申請を開く →",
+    "markAsRead": "既読にする",
+    "ariaLabel": "通知"
+  },
+  "pwa": {
+    "installTitle": "勤怠ウェブをインストール",
+    "installSubtitle": "ホーム画面からワンタップでアクセスできます。",
+    "install": "インストール",
+    "dismiss": "閉じる"
+  },
+  "notFound": {
+    "code": "404",
+    "title": "ページが見つかりません",
+    "body": "お探しのページは存在しないか移動された可能性があります。",
+    "goHome": "ダッシュボードへ戻る"
+  },
+  "validation": {
+    "emailInvalid": "有効なメールアドレスを入力してください",
+    "passwordMin": "パスワードは6文字以上で入力してください",
+    "dateFormat": "日付はYYYY-MM-DD形式で入力してください",
+    "reasonMin": "5文字以上入力してください",
+    "reasonMax": "1000文字以内で入力してください",
+    "invalidInput": "入力内容に誤りがあります",
+    "fullNameMin": "氏名は2文字以上で入力してください"
+  },
+  "errors": {
+    "notAuthenticated": "認証されていません",
+    "forbidden": "権限がありません",
+    "alreadyClockedIn": "本日はすでに出勤打刻済みです。",
+    "notClockedIn": "本日はまだ出勤打刻していません。",
+    "alreadyClockedOut": "本日はすでに退勤打刻済みです。",
+    "dayFinalized": "本日はすでに退勤済みのため、変更できません。",
+    "invalidStatusTransition": "現在の状態からそのステータスへは変更できません。",
+    "missingId": "IDが指定されていません",
+    "invalidDecision": "不正な判定です",
+    "failedToCreate": "申請の作成に失敗しました",
+    "pdfFailed": "PDFの生成に失敗しました。申請ページから再試行してください。",
+    "approvedPdfFailed": "承認しましたが、PDFの生成に失敗しました。申請ページから再試行してください。",
+    "missingRequestId": "申請IDが指定されていません",
+    "invitedFailed": "招待に失敗しました",
+    "adminOnlyInvite": "管理者のみが上位役職を招待できます。",
+    "failed": "失敗しました"
+  },
+  "pdf": {
+    "approvedTitle": "承認済み {type}",
+    "leaveType": "休暇申請",
+    "lateType": "遅刻申請",
+    "requestId": "申請ID: {id}",
+    "generated": "生成日時: {date}",
+    "section_employee": "従業員",
+    "section_request": "申請",
+    "section_approvals": "承認",
+    "label_name": "氏名",
+    "label_email": "メールアドレス",
+    "label_role": "役職",
+    "label_section": "部署",
+    "label_team": "チーム",
+    "label_type": "種別",
+    "label_date": "日付",
+    "label_submitted": "提出",
+    "label_reason": "理由",
+    "label_hr_approval": "HR承認",
+    "label_section_head_approval": "部署長承認",
+    "footer": "本書類は勤怠ウェブシステムにより自動生成されました。"
+  },
+  "teams": {
+    "leaveTitle": "新しい休暇申請",
+    "lateTitle": "新しい遅刻申請",
+    "summaryLeave": "{name}さんから新しい休暇申請",
+    "summaryLate": "{name}さんから新しい遅刻申請",
+    "subtitleDate": "日付: {date}",
+    "factType": "種別",
+    "factDate": "日付",
+    "factReason": "理由",
+    "openInApp": "勤怠ウェブで開く"
+  }
+}

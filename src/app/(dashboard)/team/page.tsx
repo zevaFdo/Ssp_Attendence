@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { canManageTeam } from "@/lib/auth/permissions";
@@ -7,21 +8,26 @@ import { TeamMemberRow } from "@/components/team/TeamMemberRow";
 import { todayISO } from "@/lib/utils/date";
 import type { AttendanceStatus } from "@/types/app";
 
-export const metadata = { title: "My Team · Attendance Web" };
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata() {
+  const t = await getTranslations();
+  return { title: t("team.metaTitle") };
+}
 
 export default async function TeamPage() {
   const profile = await getCurrentProfile();
   if (!profile) return null;
   if (!canManageTeam(profile.role)) redirect("/");
+
+  const t = await getTranslations("team");
+
   if (!profile.team_id) {
     return (
       <Card>
         <CardContent className="py-12 text-center">
-          <p className="font-medium">You aren’t assigned to a team yet.</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Ask an admin to assign you a team.
-          </p>
+          <p className="font-medium">{t("noTeamAssigned")}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t("askAdmin")}</p>
         </CardContent>
       </Card>
     );
@@ -52,18 +58,19 @@ export default async function TeamPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">My Team</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">
-          {team?.name ?? "Team"}
+          {team?.name ?? t("title")}
           {team?.sections?.name ? ` · ${team.sections.name}` : ""}
-          {" · today’s status"}
+          {" · "}
+          {t("todaysStatus")}
         </p>
       </div>
 
       {(members ?? []).length === 0 ? (
         <Card>
           <CardContent className="py-10 text-center text-sm text-muted-foreground">
-            No team members yet.
+            {t("noMembers")}
           </CardContent>
         </Card>
       ) : (

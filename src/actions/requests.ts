@@ -2,29 +2,33 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requestCreateSchema } from "@/lib/validations/requests";
+import { translateZodIssue } from "@/lib/validations/translate";
 import { postRequestToTeams } from "@/lib/teams/webhook";
+import { isLocale } from "@/i18n/config";
 
 export async function createRequest(formData: FormData) {
+  const tErr = await getTranslations("errors");
   const parsed = requestCreateSchema.safeParse({
     type: formData.get("type"),
     date: formData.get("date"),
     reason: formData.get("reason"),
   });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
+    return { error: await translateZodIssue(parsed.error) };
   }
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return { error: tErr("notAuthenticated") };
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name")
+    .select("full_name, preferred_language")
     .eq("id", user.id)
     .single();
 
@@ -39,7 +43,7 @@ export async function createRequest(formData: FormData) {
     .select("id")
     .single();
   if (error || !inserted) {
-    return { error: error?.message ?? "Failed to create request" };
+    return { error: error?.message ?? tErr("failedToCreate") };
   }
 
   // Fire-and-forget: post to Microsoft Teams. Don't fail the whole action if it errors.
@@ -50,6 +54,9 @@ export async function createRequest(formData: FormData) {
     reason: parsed.data.reason,
     appUrl: process.env.APP_URL,
     requestId: inserted.id,
+    locale: isLocale(profile?.preferred_language)
+      ? profile.preferred_language
+      : "ja",
   });
 
   revalidatePath("/requests");

@@ -1,4 +1,6 @@
 import "server-only";
+import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/config";
 
 interface RequestCardPayload {
   employeeName: string;
@@ -7,6 +9,7 @@ interface RequestCardPayload {
   reason: string;
   appUrl?: string;
   requestId?: string;
+  locale: Locale;
 }
 
 /**
@@ -22,23 +25,34 @@ export async function postRequestToTeams(payload: RequestCardPayload) {
     return { ok: false, reason: "webhook_not_configured" as const };
   }
 
-  const titleType = payload.type === "leave" ? "Leave Request" : "Late Arrival";
+  const t = await getTranslations({
+    locale: payload.locale,
+    namespace: "teams",
+  });
+
+  const titleType =
+    payload.type === "leave" ? t("leaveTitle") : t("lateTitle");
+  const summary =
+    payload.type === "leave"
+      ? t("summaryLeave", { name: payload.employeeName })
+      : t("summaryLate", { name: payload.employeeName });
+
   const themeColor = payload.type === "leave" ? "0EA5E9" : "F59E0B";
 
   const body = {
     "@type": "MessageCard",
     "@context": "https://schema.org/extensions",
     themeColor,
-    summary: `New ${titleType} from ${payload.employeeName}`,
-    title: `New ${titleType}`,
+    summary,
+    title: titleType,
     sections: [
       {
         activityTitle: payload.employeeName,
-        activitySubtitle: `Date: ${payload.date}`,
+        activitySubtitle: t("subtitleDate", { date: payload.date }),
         facts: [
-          { name: "Type", value: titleType },
-          { name: "Date", value: payload.date },
-          { name: "Reason", value: payload.reason },
+          { name: t("factType"), value: titleType },
+          { name: t("factDate"), value: payload.date },
+          { name: t("factReason"), value: payload.reason },
         ],
         markdown: true,
       },
@@ -48,7 +62,7 @@ export async function postRequestToTeams(payload: RequestCardPayload) {
         ? [
             {
               "@type": "OpenUri",
-              name: "Open in Attendance Web",
+              name: t("openInApp"),
               targets: [
                 {
                   os: "default",

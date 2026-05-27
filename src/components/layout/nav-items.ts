@@ -15,51 +15,78 @@ import type { UserRole } from "@/types/app";
 
 export interface NavItem {
   href: string;
-  label: string;
+  /** Translation key under the `nav` namespace. */
+  labelKey: string;
+  /** Translation key under `nav.mobileLabels`, used by the mobile bottom nav. */
+  mobileLabelKey?: string;
   icon: LucideIcon;
   allow?: UserRole[];
   mobile?: boolean;
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  { href: "/", label: "Status Board", icon: Home, mobile: true },
-  { href: "/attendance", label: "Clock In/Out", icon: Clock, mobile: true },
-  { href: "/attendance/history", label: "Attendance", icon: History },
-  { href: "/requests", label: "Requests", icon: FileText, mobile: true },
+  {
+    href: "/",
+    labelKey: "statusBoard",
+    mobileLabelKey: "statusBoard",
+    icon: Home,
+    mobile: true,
+  },
+  {
+    href: "/attendance",
+    labelKey: "clockInOut",
+    mobileLabelKey: "clockInOut",
+    icon: Clock,
+    mobile: true,
+  },
+  { href: "/attendance/history", labelKey: "attendance", icon: History },
+  {
+    href: "/requests",
+    labelKey: "requests",
+    mobileLabelKey: "requests",
+    icon: FileText,
+    mobile: true,
+  },
   {
     href: "/approvals",
-    label: "Approvals",
+    labelKey: "approvals",
     icon: Inbox,
     allow: ["admin", "hr_supervisor", "section_head"],
   },
   {
     href: "/team",
-    label: "My Team",
+    labelKey: "myTeam",
     icon: UsersRound,
     allow: ["team_leader", "admin"],
   },
   {
     href: "/employees",
-    label: "Employees",
+    labelKey: "employees",
     icon: Users,
     allow: ["admin", "hr_supervisor", "section_head"],
   },
-  { href: "/notifications", label: "Notifications", icon: Bell, mobile: true },
+  {
+    href: "/notifications",
+    labelKey: "notifications",
+    mobileLabelKey: "notifications",
+    icon: Bell,
+    mobile: true,
+  },
   {
     href: "/admin/users",
-    label: "Admin · Users",
+    labelKey: "adminUsers",
     icon: Shield,
     allow: ["admin"],
   },
   {
     href: "/admin/sections",
-    label: "Admin · Sections",
+    labelKey: "adminSections",
     icon: Building2,
     allow: ["admin"],
   },
   {
     href: "/admin/teams",
-    label: "Admin · Teams",
+    labelKey: "adminTeams",
     icon: UsersRound,
     allow: ["admin"],
   },

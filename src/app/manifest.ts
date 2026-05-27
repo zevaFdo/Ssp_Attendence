@@ -1,11 +1,14 @@
 import type { MetadataRoute } from "next";
+import { getTranslations, getLocale } from "next-intl/server";
 
-export default function manifest(): MetadataRoute.Manifest {
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+  const t = await getTranslations("common");
+  const locale = await getLocale();
   return {
-    name: "Attendance Web",
-    short_name: "Attendance",
-    description:
-      "Employee attendance, leave & late requests, and approvals.",
+    name: t("appName"),
+    short_name: t("appName"),
+    description: t("appDescription"),
+    lang: locale,
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

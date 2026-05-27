@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -14,6 +15,7 @@ interface Props {
 export function AttendanceHistoryFilters({ showSearch }: Props) {
   const router = useRouter();
   const params = useSearchParams();
+  const t = useTranslations("attendance.history");
   const [, startTransition] = useTransition();
 
   const [from, setFrom] = useState(params.get("from") ?? "");
@@ -45,7 +47,7 @@ export function AttendanceHistoryFilters({ showSearch }: Props) {
   return (
     <div className="grid gap-3 rounded-lg border bg-card p-4 md:grid-cols-[1fr_1fr_2fr_auto] md:items-end">
       <div className="space-y-1.5">
-        <Label htmlFor="from" className="text-xs">From</Label>
+        <Label htmlFor="from" className="text-xs">{t("from")}</Label>
         <Input
           id="from"
           type="date"
@@ -54,7 +56,7 @@ export function AttendanceHistoryFilters({ showSearch }: Props) {
         />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="to" className="text-xs">To</Label>
+        <Label htmlFor="to" className="text-xs">{t("to")}</Label>
         <Input
           id="to"
           type="date"
@@ -64,12 +66,12 @@ export function AttendanceHistoryFilters({ showSearch }: Props) {
       </div>
       {showSearch ? (
         <div className="space-y-1.5">
-          <Label htmlFor="q" className="text-xs">Search by employee name</Label>
+          <Label htmlFor="q" className="text-xs">{t("searchByName")}</Label>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="q"
-              placeholder="Type a name..."
+              placeholder={t("searchPlaceholder")}
               className="pl-9"
               value={q}
               onChange={(e) => setQ(e.target.value)}
@@ -81,9 +83,9 @@ export function AttendanceHistoryFilters({ showSearch }: Props) {
       )}
       <div className="flex gap-2">
         <Button onClick={apply} className="flex-1 md:flex-none">
-          Apply
+          {t("apply")}
         </Button>
-        <Button onClick={reset} variant="ghost" size="icon" aria-label="Reset">
+        <Button onClick={reset} variant="ghost" size="icon" aria-label={t("reset")}>
           <X className="h-4 w-4" />
         </Button>
       </div>
