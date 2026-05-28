@@ -92,7 +92,10 @@
     },
     "noSection": "部署未設定",
     "in": "出勤",
-    "out": "退勤"
+    "out": "退勤",
+    "you": "あなた",
+    "quickSwitchTitle": "ステータスを更新",
+    "quickSwitchSubtitle": "現在の状況に合うものを選択してください。"
   },
   "attendance": {
     "title": "マイ勤怠",

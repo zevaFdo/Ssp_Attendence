@@ -4,19 +4,25 @@ import { useTranslations } from "next-intl";
 import { StatusCard, type StatusCardEmployee } from "./StatusCard";
 import { StatusBoardRealtime } from "./StatusBoardRealtime";
 import {
-  ATTENDANCE_STATUS_CLASSES,
   ATTENDANCE_STATUS_DOT_CLASSES,
   ATTENDANCE_STATUS_VALUES,
 } from "@/lib/utils/status";
 import { cn } from "@/lib/utils";
+import type { StatusSwitcherGridToday } from "@/components/attendance/StatusSwitcherGrid";
 
 interface StatusBoardProps {
   employees: StatusCardEmployee[];
+  currentUserId?: string | null;
+  currentUserToday?: StatusSwitcherGridToday | null;
 }
 
-export function StatusBoard({ employees }: StatusBoardProps) {
+export function StatusBoard({
+  employees,
+  currentUserId,
+  currentUserToday,
+}: StatusBoardProps) {
   const t = useTranslations("dashboard");
-  const tCounts = useTranslations("dashboard.counts");
+  const tStatus = useTranslations("attendanceStatus");
 
   if (employees.length === 0) {
     return (
@@ -39,29 +45,34 @@ export function StatusBoard({ employees }: StatusBoardProps) {
     <>
       <StatusBoardRealtime />
 
-      <div className="mb-4 flex flex-wrap gap-2 text-xs">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        {employees.map((e) => {
+          const isSelf = !!currentUserId && e.id === currentUserId;
+          return (
+            <StatusCard
+              key={e.id}
+              employee={e}
+              isSelf={isSelf}
+              selfToday={isSelf ? currentUserToday ?? null : null}
+            />
+          );
+        })}
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
         {ATTENDANCE_STATUS_VALUES.map((s) => (
-          <span
-            key={s}
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-md px-2 py-1 font-medium ring-1",
-              ATTENDANCE_STATUS_CLASSES[s],
-            )}
-          >
+          <span key={s} className="inline-flex items-center gap-1">
             <span
               className={cn(
                 "h-1.5 w-1.5 rounded-full",
                 ATTENDANCE_STATUS_DOT_CLASSES[s],
               )}
             />
-            {tCounts(s, { count: counts[s] ?? 0 })}
+            <span>{tStatus(s)}</span>
+            <span className="tabular-nums font-medium text-foreground">
+              {counts[s] ?? 0}
+            </span>
           </span>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        {employees.map((e) => (
-          <StatusCard key={e.id} employee={e} />
         ))}
       </div>
     </>

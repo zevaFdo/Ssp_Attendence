@@ -92,7 +92,10 @@
     },
     "noSection": "No section",
     "in": "In",
-    "out": "Out"
+    "out": "Out",
+    "you": "You",
+    "quickSwitchTitle": "Update my status",
+    "quickSwitchSubtitle": "Pick the option that matches what you're doing right now."
   },
   "attendance": {
     "title": "My Attendance",

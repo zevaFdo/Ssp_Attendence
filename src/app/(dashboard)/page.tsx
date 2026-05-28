@@ -2,7 +2,9 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { StatusBoard } from "@/components/dashboard/StatusBoard";
 import type { StatusCardEmployee } from "@/components/dashboard/StatusCard";
+import { ClockInOutCard } from "@/components/attendance/ClockInOutCard";
 import { todayISO, formatLocalized } from "@/lib/utils/date";
+import { getCurrentProfile } from "@/lib/auth/session";
 import type { AttendanceStatus } from "@/types/app";
 import type { Locale as AppLocale } from "@/i18n/config";
 
@@ -18,21 +20,35 @@ export default async function HomePage() {
   const today = todayISO();
   const locale = (await getLocale()) as AppLocale;
   const t = await getTranslations("dashboard");
+  const profile = await getCurrentProfile();
 
-  const [{ data: profiles }, { data: attendance }, { data: sections }, { data: teams }] =
-    await Promise.all([
-      supabase
-        .from("profiles")
-        .select("id, full_name, email, role, avatar_url, section_id, team_id")
-        .eq("is_active", true)
-        .order("full_name", { ascending: true }),
-      supabase
-        .from("attendance")
-        .select("user_id, status, clock_in, clock_out")
-        .eq("date", today),
-      supabase.from("sections").select("id, name"),
-      supabase.from("teams").select("id, name"),
-    ]);
+  const [
+    { data: profiles },
+    { data: attendance },
+    { data: sections },
+    { data: teams },
+    mineTodayResult,
+  ] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("id, full_name, email, role, avatar_url, section_id, team_id")
+      .eq("is_active", true)
+      .order("full_name", { ascending: true }),
+    supabase
+      .from("attendance")
+      .select("user_id, status, clock_in, clock_out")
+      .eq("date", today),
+    supabase.from("sections").select("id, name"),
+    supabase.from("teams").select("id, name"),
+    profile
+      ? supabase
+          .from("attendance")
+          .select("status, clock_in, clock_out")
+          .eq("user_id", profile.id)
+          .eq("date", today)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+  ]);
 
   const sectionMap = new Map((sections ?? []).map((s) => [s.id, s.name]));
   const teamMap = new Map((teams ?? []).map((t) => [t.id, t.name]));
@@ -58,6 +74,8 @@ export default async function HomePage() {
     };
   });
 
+  const mineToday = mineTodayResult?.data ?? null;
+
   return (
     <div className="space-y-6">
       <div>
@@ -68,7 +86,12 @@ export default async function HomePage() {
           })}
         </p>
       </div>
-      <StatusBoard employees={employees} />
+      {profile ? <ClockInOutCard today={mineToday} /> : null}
+      <StatusBoard
+        employees={employees}
+        currentUserId={profile?.id ?? null}
+        currentUserToday={mineToday}
+      />
     </div>
   );
 }
