@@ -22,6 +22,17 @@ const withPWA = withPWAInit({
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   serverExternalPackages: ["pdfkit"],
+  // Make sure the Noto Sans JP font files (used by src/lib/pdf/generator.ts)
+  // are copied into the serverless function bundles for every route that may
+  // trigger PDF generation. Without this, the .otf files are excluded from
+  // the deploy output and the generator silently falls back to Helvetica,
+  // producing garbled Japanese characters.
+  outputFileTracingIncludes: {
+    "/api/requests/*/pdf": ["./src/lib/pdf/fonts/**/*"],
+    "/approvals": ["./src/lib/pdf/fonts/**/*"],
+    "/approvals/**": ["./src/lib/pdf/fonts/**/*"],
+    "/requests/**": ["./src/lib/pdf/fonts/**/*"],
+  },
   images: {
     remotePatterns: [
       {

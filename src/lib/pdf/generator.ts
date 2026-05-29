@@ -28,29 +28,43 @@ export interface RequestPdfData {
   team: { name: string } | null;
 }
 
-const FONTS_DIR = path.join(
-  process.cwd(),
-  "src",
-  "lib",
-  "pdf",
-  "fonts",
-);
+// In serverless deployments (Vercel, etc.) `process.cwd()` is the function
+// root and may not be the project root, so try several candidate locations
+// before giving up. The `outputFileTracingIncludes` entry in next.config.ts
+// guarantees the .otf files are shipped into the bundle, but the exact
+// resolved path depends on the build output layout.
+const FONT_CANDIDATE_DIRS = [
+  path.join(process.cwd(), "src", "lib", "pdf", "fonts"),
+  path.join(process.cwd(), ".next", "server", "src", "lib", "pdf", "fonts"),
+  path.join(process.cwd(), ".next", "standalone", "src", "lib", "pdf", "fonts"),
+];
 
-const REGULAR_FONT_PATH = path.join(FONTS_DIR, "NotoSansJP-Regular.otf");
-const BOLD_FONT_PATH = path.join(FONTS_DIR, "NotoSansJP-Bold.otf");
+interface ResolvedFonts {
+  regular: string;
+  bold: string;
+}
 
-let fontsAvailable: boolean | null = null;
-function checkFonts(): boolean {
-  if (fontsAvailable !== null) return fontsAvailable;
-  fontsAvailable =
-    existsSync(REGULAR_FONT_PATH) && existsSync(BOLD_FONT_PATH);
-  if (!fontsAvailable) {
-    console.warn(
-      "[pdf.generator] Noto Sans JP fonts not found. " +
-        "Falling back to Helvetica — Japanese characters will not render.",
-    );
+let resolvedFonts: ResolvedFonts | null | undefined;
+
+function resolveFonts(): ResolvedFonts | null {
+  if (resolvedFonts !== undefined) return resolvedFonts;
+
+  for (const dir of FONT_CANDIDATE_DIRS) {
+    const regular = path.join(dir, "NotoSansJP-Regular.otf");
+    const bold = path.join(dir, "NotoSansJP-Bold.otf");
+    if (existsSync(regular) && existsSync(bold)) {
+      resolvedFonts = { regular, bold };
+      return resolvedFonts;
+    }
   }
-  return fontsAvailable;
+
+  console.warn(
+    "[pdf.generator] Noto Sans JP fonts not found in any candidate path. " +
+      "Falling back to Helvetica — Japanese characters will not render. " +
+      `Tried: ${FONT_CANDIDATE_DIRS.join(", ")}`,
+  );
+  resolvedFonts = null;
+  return null;
 }
 
 const FONT = {
@@ -77,16 +91,16 @@ export async function buildRequestPdf(data: RequestPdfData): Promise<Buffer> {
 
   return await new Promise((resolve, reject) => {
     try {
-      const useNoto = checkFonts();
+      const fonts = resolveFonts();
       const doc = new PDFDocument({ size: "A4", margin: 56 });
       const chunks: Buffer[] = [];
       doc.on("data", (chunk) => chunks.push(chunk as Buffer));
       doc.on("end", () => resolve(Buffer.concat(chunks)));
       doc.on("error", reject);
 
-      if (useNoto) {
-        doc.registerFont(FONT.regular, REGULAR_FONT_PATH);
-        doc.registerFont(FONT.bold, BOLD_FONT_PATH);
+      if (fonts) {
+        doc.registerFont(FONT.regular, fonts.regular);
+        doc.registerFont(FONT.bold, fonts.bold);
       } else {
         // Helvetica is built-in; alias under our names so the body code
         // doesn't have to care which font is in use.
