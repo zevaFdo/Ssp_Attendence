@@ -12,6 +12,10 @@ const withPWA = withPWAInit({
   disable: process.env.NODE_ENV === "development",
   workboxOptions: {
     disableDevLogs: true,
+    // Service Worker がバイナリレスポンス (PDF など) や API ルートを
+    // ナビゲーションフォールバックで横取りしないよう除外する。
+    // これがないと本番環境で /api/**/pdf のダウンロードが失敗する。
+    navigateFallbackDenylist: [/^\/api\//],
   },
 });
 
