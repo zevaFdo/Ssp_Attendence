@@ -192,16 +192,21 @@ export default async function RequestDetailPage({ params }: PageProps) {
                 </div>
               </div>
               {r.document_path ? (
-                <Button asChild>
-                  <a
-                    href={`/api/requests/${r.id}/pdf`}
-                    download={`request-${r.id}.pdf`}
-                    rel="noopener noreferrer"
-                  >
-                    <Download className="h-4 w-4" />
-                    {t("downloadPdf")}
-                  </a>
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button asChild>
+                    <a
+                      href={`/api/requests/${r.id}/pdf`}
+                      download={`request-${r.id}.pdf`}
+                      rel="noopener noreferrer"
+                    >
+                      <Download className="h-4 w-4" />
+                      {t("downloadPdf")}
+                    </a>
+                  </Button>
+                  {canRegeneratePdf ? (
+                    <RegeneratePdfButton requestId={r.id} />
+                  ) : null}
+                </div>
               ) : canRegeneratePdf ? (
                 <RegeneratePdfButton requestId={r.id} />
               ) : (
