@@ -10,6 +10,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ApprovalActions } from "@/components/requests/ApprovalActions";
+import { RegeneratePdfButton } from "@/components/requests/RegeneratePdfButton";
 import { RequestStatusBadge } from "@/components/requests/RequestStatusBadge";
 import { formatLocalized } from "@/lib/utils/date";
 import { Download, FileText, ArrowLeft } from "lucide-react";
@@ -57,6 +58,10 @@ export default async function RequestDetailPage({ params }: PageProps) {
 
   const fullyApproved =
     r.hr_approval === "approved" && r.section_head_approval === "approved";
+  const canRegeneratePdf =
+    profile.role === "admin" ||
+    canApproveAsHR(profile.role) ||
+    canApproveAsSectionHead(profile.role);
 
   const t = await getTranslations("requests.detail");
   const tApprovals = await getTranslations("approvals.labels");
@@ -193,6 +198,8 @@ export default async function RequestDetailPage({ params }: PageProps) {
                     {t("downloadPdf")}
                   </Link>
                 </Button>
+              ) : canRegeneratePdf ? (
+                <RegeneratePdfButton requestId={r.id} />
               ) : (
                 <span className="text-xs text-emerald-800">
                   {t("generating")}

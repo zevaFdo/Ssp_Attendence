@@ -164,7 +164,9 @@
       "approvalDocumentReady": "Approval document ready",
       "approvalDocumentSubtitle": "PDF stored in Supabase Storage.",
       "downloadPdf": "Download PDF",
-      "generating": "Generating…"
+      "generating": "Generating…",
+      "regeneratePdf": "Retry PDF generation",
+      "regenerateSuccess": "PDF generated. Refreshing..."
     }
   },
   "approvals": {

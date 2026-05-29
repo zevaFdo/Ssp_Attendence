@@ -164,7 +164,9 @@
       "approvalDocumentReady": "承認書類の準備ができました",
       "approvalDocumentSubtitle": "PDFはSupabaseストレージに保存されています。",
       "downloadPdf": "PDFをダウンロード",
-      "generating": "生成中..."
+      "generating": "生成中...",
+      "regeneratePdf": "PDF生成を再試行",
+      "regenerateSuccess": "PDFを生成しました。更新しています..."
     }
   },
   "approvals": {

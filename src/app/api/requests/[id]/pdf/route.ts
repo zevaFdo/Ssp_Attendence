@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { createSignedUrl } from "@/lib/pdf/upload";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { REQUEST_DOCS_BUCKET } from "@/lib/pdf/upload";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +34,27 @@ export async function GET(
     );
   }
 
-  const url = await createSignedUrl(req.document_path, 60);
-  return NextResponse.redirect(url);
+  const admin = createAdminClient();
+  const { data: file, error: downloadError } = await admin.storage
+    .from(REQUEST_DOCS_BUCKET)
+    .download(req.document_path);
+
+  if (downloadError || !file) {
+    console.error("[requests.pdf] Failed to download PDF", downloadError);
+    return NextResponse.json(
+      { error: "Document download failed" },
+      { status: 500 },
+    );
+  }
+
+  const filename = `request-${req.id}.pdf`;
+  const buffer = await file.arrayBuffer();
+
+  return new NextResponse(buffer, {
+    headers: {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="${filename}"`,
+      "Cache-Control": "private, no-store",
+    },
+  });
 }

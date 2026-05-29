@@ -75,6 +75,8 @@ export async function sectionHeadDecide(formData: FormData) {
       await finalizeRequestPdf(parsed.data.requestId);
     } catch (e) {
       console.error("[approvals] PDF generation failed", e);
+      revalidatePath("/approvals");
+      revalidatePath(`/requests/${parsed.data.requestId}`);
       // Notify the actor; the request is still approved either way.
       return {
         ok: true as const,

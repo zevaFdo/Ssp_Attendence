@@ -16,16 +16,25 @@ export function ApprovalActions({ requestId, stage, disabled }: Props) {
   const t = useTranslations("approvals");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
 
   function decide(decision: "approved" | "rejected") {
     setError(null);
+    setWarning(null);
     startTransition(async () => {
       const fd = new FormData();
       fd.set("requestId", requestId);
       fd.set("decision", decision);
-      const action = stage === "hr" ? hrDecide : sectionHeadDecide;
-      const result = await action(fd);
+      const result =
+        stage === "hr" ? await hrDecide(fd) : await sectionHeadDecide(fd);
       if (result?.error) setError(result.error);
+      if (
+        result &&
+        "warning" in result &&
+        typeof result.warning === "string"
+      ) {
+        setWarning(result.warning);
+      }
     });
   }
 
@@ -58,6 +67,11 @@ export function ApprovalActions({ requestId, stage, disabled }: Props) {
       {error ? (
         <p className="rounded-md bg-rose-50 px-2 py-1 text-xs text-rose-700">
           {error}
+        </p>
+      ) : null}
+      {warning ? (
+        <p className="rounded-md bg-amber-50 px-2 py-1 text-xs text-amber-800">
+          {warning}
         </p>
       ) : null}
     </div>
