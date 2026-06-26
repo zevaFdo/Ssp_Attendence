@@ -1,0 +1,440 @@
+# Attendance Web プロジェクト — AI Agent Instructions
+# Attendance Web Project — AI Agent Instructions
+
+> **Primary language / 主言語**: 日本語 (Japanese) — all project documents, UI copy, comments, and commit messages.
+> **Secondary language / 副言語**: English — every document includes an English section or translation block.
+> **Chat response language / チャット応答言語**: **English only** — AI assistant replies in English in chat; code comments and commits remain Japanese.
+>
+> このファイルは AI アシスタント（Claude / Cursor / Copilot / Windsurf / Gemini など）が **作業前に必ず読む** べき指示書です。
+> Copy this file to the project root as `.cursorrules` / `CLAUDE.md` / `.github/copilot-instructions.md` / `GEMINI.md` as needed.
+
+---
+
+## 🛑 最優先指示 | Top-Priority Instructions
+
+**English:** This project has a **Development Constitution** — the highest rule. Read it before any work. If a violation is likely, **stop and ask a human**.
+
+**日本語:** このプロジェクト（Attendance Web）には **開発憲法** という最上位ルールがあります。すべての作業に優先します。
+
+**作業前に必ず以下を確認 / Before starting, always read:**
+
+1. `/memory/constitution.md` — canonical constitution (bilingual)
+2. `docs/onboarding/01-constitution-essence.md` — 10-minute digest (bilingual)
+3. 違反のおそれがある場合は **作業を停止して人間に確認** / If violation is likely, **stop and confirm with a human**
+
+---
+
+## プロジェクト基本情報 | Project Overview
+
+| Item | Value |
+|------|-------|
+| **Product / プロダクト** | Attendance Web — Employee attendance & workflow management / 従業員勤怠・申請・承認管理 |
+| **Stack / 技術** | Next.js 15 (App Router) / TypeScript / Supabase (PostgreSQL + Auth + Realtime + Storage) / Tailwind CSS + Radix UI / Playwright |
+| **Locale / ロケール** | `ja-JP` (primary UI) + `en` (i18n via `next-intl`) / Timezone: `Asia/Tokyo` |
+| **Chat language / チャット言語** | **English** — all AI chat responses |
+| **Document language / 文書言語** | **Japanese first, English second** — every spec, doc, and constitution section |
+| **Code comments & commits / コメント・commit** | **Japanese** |
+
+---
+
+## 📝 バイリンガル文書規範 | Bilingual Documentation Standard
+
+**English:** Every project document MUST be written in two languages. Japanese is primary; English is secondary.
+
+**日本語:** すべてのプロジェクト文書は **日本語（主）＋ 英語（副）** の2言語で記載すること。
+
+### Required format / 必須フォーマット
+
+```markdown
+## セクション名 | Section Title
+
+**日本語:** （本文）
+
+**English:** (Translation or equivalent content)
+```
+
+### Applies to / 対象
+
+- `memory/constitution.md`
+- `docs/**/*.md`
+- `specs/**/*.md` (requirements / technical / implementation)
+- PR descriptions (Japanese body + English summary block)
+- README sections added or updated by AI
+
+### Exceptions / 例外
+
+- Source code (`*.ts`, `*.tsx`, `*.sql`) — comments in Japanese; i18n keys in `ja.json` + `en.json`
+- Generated files (`database.types.ts`, lock files)
+- `.cursorrules` — bilingual inline (this file)
+
+---
+
+## 🚫 絶対禁止事項 | Absolute Prohibitions
+
+**English:** Violations require immediate work stoppage.
+
+**日本語:** 違反時は即作業停止。
+
+### 1. 仕様書なしの実装 | Implementation Without Spec
+
+**日本語:**
+- すべての機能・修正は `specs/[ID]-[name]/` の仕様書 (requirements / technical / implementation) を作成・確認してから着手
+- 業務ルール変更（バリデーション緩和 / 上限拡張 / 既存挙動変更）も **必ず仕様書化**
+- 「実装しながら spec を書く」は禁止。**順序を守る**
+
+**English:**
+- All features and fixes require a spec in `specs/[ID]-[name]/` (requirements / technical / implementation) before coding
+- Business rule changes must also be spec'd
+- Writing specs while implementing is forbidden — follow the order
+
+### 2. テストなしの実装 | Implementation Without Tests (RED Skip Forbidden)
+
+**日本語:**
+- テスト先行（テスト作成 → 実行して失敗確認 → 実装）
+- 「実装後にテスト書く」は憲法違反
+- Supabase / PostgreSQL は統合テストで実 DB を使用；UI 単体のみモック可
+- テストを通すためだけのコード厳禁
+
+**English:**
+- Test-first: write test → confirm RED → implement
+- Post-implementation tests are a constitution violation
+- Use real Supabase/PostgreSQL in integration tests; mock UI only in unit tests
+- No code written solely to pass tests
+
+### 3. 既存名称の変更 | Forbidden Renames
+
+**日本語:** 以下の名称を**絶対に変更しない**:
+
+**English:** Never rename the following:
+
+```
+Environment / 環境変数:
+  NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  SUPABASE_SERVICE_ROLE_KEY, TEAMS_WEBHOOK_URL, APP_URL
+
+Tables / テーブル:
+  profiles, sections, teams, attendance, requests, notifications
+
+Enums / ENUM:
+  user_role, attendance_status, request_type, approval_status
+
+Roles / ロール値:
+  admin, hr_supervisor, section_head, team_leader, employee
+
+Storage bucket:
+  request-documents
+
+Paths / パス規約:
+  request-documents/{user_id}/{request_id}.pdf
+```
+
+「より良い名前」への変更も**互換性を破壊するので禁止** / Renaming for "better names" is forbidden.
+
+### 4. タイムアウト設定の変更 | Timeout Changes Forbidden
+
+**English:** Fixed values — do not increase because tests or actions are slow.
+
+**日本語:** 以下は**固定値**。「遅いので延ばす」は禁止。実装かインフラを改善する。
+
+```
+Playwright   timeout=15000  expect.timeout=5000  navigationTimeout=15000  actionTimeout=10000
+Vitest/Jest  testTimeout=15000 per test
+Server Action / API Route   max 10s in production
+```
+
+### 5. RLS バイパス | RLS Bypass Forbidden
+
+**日本語:**
+- クライアントから Service Role Key を使用禁止
+- `SUPABASE_SERVICE_ROLE_KEY` はサーバー専用（招待・PDF アップロード・最終承認のみ）
+- 新テーブルは RLS 必須
+
+**English:**
+- Never expose Service Role Key to the client
+- Service role is server-only (invites, PDF upload, final approval)
+- All new tables require RLS
+
+### 6. その場しのぎコード | No Workarounds (Constitution VII)
+
+**日本語:**
+- テストを通すためだけのハードコーディング禁止
+- 仕様の独断緩和禁止
+- 問題発生時は「修正案を提示して人間に承認を得る」
+
+**English:**
+- No hardcoding to pass tests
+- No unilateral spec relaxation
+- Propose fixes and get human approval on problems
+
+### 7. モバイルファースト UI 原則 | Mobile-First UI (Constitution IX)
+
+**日本語:**
+- Tailwind CSS + Radix UI；カスタム CSS は `globals.css` に限定
+- デスクトップ: サイドバー / モバイル: ボトムナビ（`MobileBottomNav`）
+- タッチターゲット最小 44×44px
+- 375px ビューポートで必ず検証
+
+**English:**
+- Tailwind + Radix; custom CSS only in `globals.css`
+- Desktop: sidebar / Mobile: bottom nav
+- Min touch target 44×44px
+- Always verify at 375px viewport
+
+---
+
+## ✅ 必須対応事項 | Required Practices
+
+### 1. 仕様駆動開発 | Spec-Driven Development (Constitution I)
+
+```
+specs/[ID]-[feature-name]/
+├── requirements.md   # 何を作るか / What to build
+├── technical.md      # どう作るか / How to build
+└── implementation.md # どう進めるか / How to execute
+```
+
+Each stage requires **human approval** before proceeding.
+各段階で**人間の承認後**に次へ進む。
+
+### 2. テストファースト | Test-First (Constitution II)
+
+```
+1. Write tests → commit (test: ... (RED))
+2. Run tests → confirm failure
+3. Minimal implementation → commit (feat/fix: ... (GREEN))
+4. Run tests → all PASS
+5. Refactor → commit (refactor: ...)
+```
+
+### 3. 統合テスト | Integration Testing (Constitution III)
+
+- Unit: Vitest/Jest (`tests/unit/`)
+- Integration: Server Actions / API Routes + Supabase (`tests/integration/`)
+- E2E: Playwright browser (`tests/e2e/`)
+
+### 4. ブラウザ実機確認 | Browser Verification (Constitution VIII)
+
+- Playwright automated tests
+- Manual browser check (desktop + 375px mobile)
+- Screenshots in PR when UI changes
+
+### 5. 日本語 UI + i18n | Japanese UI + i18n (Constitution IV)
+
+- Primary UI: `src/messages/ja.json`
+- Secondary UI: `src/messages/en.json`
+- Add keys to **both** files when adding UI strings
+- Comments and commits: Japanese
+
+### 6. 承認ワークフロー | Approval Workflow (Constitution XI)
+
+**Target flow / 目標フロー:**
+```
+Applicant → Section Head (section_head) → HR (hr_supervisor) → PDF
+                ↓ reject                         ↓ reject
+           rejection reason              rejection reason
+```
+
+**English:** Rejection requires `rejection_reason`. Current DB may still use HR → Section Head — migrate via Issue, do not patch ad hoc.
+
+**日本語:** 却下時は `rejection_reason` 必須。現行 DB は HR → Section Head の可能性あり — Issue 化して一括移行すること。
+
+---
+
+## ワークフロー | Workflow
+
+```
+Business request / 業務要求
+  ↓
+① GitHub Issue
+  ↓
+② specs/ 3-stage spec (approval) / 3段階仕様書（承認制）
+  ↓
+③ Branch (feature/issue-N-name)
+  ↓
+④ Test-first (RED → GREEN → REFACTOR)
+  ↓
+⑤ Browser verification (Playwright + manual, 375px)
+  ↓
+⑥ PR (template required)
+  ↓
+⑦ Review
+  ↓
+⑧ Merge → Close Issue
+```
+
+---
+
+## コミット & PR | Commits & PRs
+
+### コミットメッセージ | Commit Message (Japanese)
+
+```
+<type>: <一行要約（60文字以下）>
+
+<本文: なぜこの変更が必要か>
+
+- 変更点 1
+- 変更点 2
+- 関連: closes #N / specs/00N-feature-name/
+
+Co-Authored-By: <AI名> <noreply@anthropic.com>
+```
+
+`<type>`: `feat` / `fix` / `refactor` / `test` / `docs` / `chore` / `style`
+
+### PR 本文テンプレ | PR Template
+
+```markdown
+## 関連 Issue | Related Issue
+- closes #[number]
+
+## 関連仕様書 | Related Specs
+- specs/[ID]-[name]/requirements.md
+- specs/[ID]-[name]/technical.md
+- specs/[ID]-[name]/implementation.md
+
+## 変更概要 | Summary
+- [change 1 / 変更 1]
+- [change 2 / 変更 2]
+
+## 影響範囲 | Impact
+- Files: [list]
+- DB schema change: yes / no
+
+## テスト | Tests
+- Unit: [count / result]
+- Integration: [count / result]
+- Playwright: [specs / result]
+- Manual: [acceptance criteria, screenshots]
+
+## 憲法準拠チェック | Constitution Compliance
+- [ ] I. Spec exists / 仕様書あり
+- [ ] II. Test-first (RED commit) / テストファースト
+- [ ] III. Integration tests / 統合テスト
+- [ ] IV. Japanese UI + i18n / 日本語 UI
+- [ ] VI. No timeout changes / タイムアウト変更なし
+- [ ] VII. No workarounds / その場しのぎなし
+- [ ] VIII. Browser verified / ブラウザ確認済
+- [ ] IX. Mobile-first UI / モバイルファースト
+- [ ] X. RLS intact / RLS 維持
+- [ ] Naming: no forbidden renames / 命名禁止リスト遵守
+```
+
+---
+
+## 10 次元品質チェック | 10-Dimension Quality Check
+
+1. Error handling / エラーハンドリング
+2. Performance (N+1 / indexes / pagination) / パフォーマンス
+3. Security (XSS / SQLi / CSRF / authz) / セキュリティ
+4. Authentication & authorization / 認証・認可
+5. Reliability (transactions / concurrency) / 信頼性
+6. Maintainability (naming / patterns) / 保守性
+7. Testability / テスト可能性
+8. Scalability / スケーラビリティ
+9. Observability (structured logs) / 観測可能性
+10. Team conventions / チーム開発慣行
+
+---
+
+## 業務ドメインの前提 | Business Domain
+
+**English:**
+
+| Domain | Rule |
+|--------|------|
+| Request types | Leave, Late, Early leave, Out-of-office |
+| Leave dates | Full day / AM half / PM half, or date From–To |
+| Time-based requests | Single date + time From–To |
+| Processing (optional) | Paid leave (days/half-days/hours) or schedule change |
+| Approval | Section Head → HR; rejection reason required |
+| Paid leave | Self-view balance; admin views all; warn 2 months before year-end if < 5 days taken |
+| Cancel/edit | Allowed before approval; restricted after |
+
+**日本語:**
+
+| ドメイン | ルール |
+|---------|--------|
+| 申請種別 | 休暇・遅刻・早退・外出 |
+| 休暇日付 | 1日 / 午前休 / 午後休、または From–To |
+| 時刻系申請 | 単日 + 時刻 From–To |
+| 処理方法（任意） | 有給（日数/0.5日/時間）または時間変更 |
+| 承認 | 所属上長 → 人事；却下理由必須 |
+| 有給 | 自己確認；admin 全員確認；5日未満は2か月前警告 |
+| 取消・変更 | 承認前可；承認後は制限 |
+
+詳細: `memory/constitution.md` の「ドメイン仕様」
+
+---
+
+## 主要パス | Key Paths
+
+```
+src/
+  app/(dashboard)/          # Dashboard pages / ダッシュボード
+  app/(auth)/               # Login / ログイン
+  actions/                  # Server Actions
+  components/               # React components
+  lib/
+    supabase/               # Supabase clients + middleware
+    validations/            # Zod schemas
+    auth/permissions.ts     # Role helpers
+    pdf/                    # PDF generation + upload
+    teams/webhook.ts        # MS Teams Adaptive Cards
+  messages/ja.json          # Primary i18n
+  messages/en.json          # Secondary i18n
+supabase/migrations/        # SQL migrations (ordered)
+memory/constitution.md      # Development constitution (canonical)
+docs/onboarding/            # Onboarding docs (bilingual)
+specs/                      # Spec-driven docs (bilingual)
+```
+
+---
+
+## よく使うコマンド | Common Commands
+
+```bash
+# Development / 開発
+npm install
+npm run dev                 # http://localhost:3000
+
+# Quality / 品質
+npm run lint
+npm run build
+
+# Types / 型生成
+npm run types:gen           # Requires SUPABASE_PROJECT_ID
+
+# Tests (when added) / テスト（追加後）
+npx vitest run
+npx playwright test
+npx playwright test --headed
+npx playwright test --project=chromium
+```
+
+---
+
+## 困ったときのフォールバック | Fallback Guide
+
+| 状況 / Situation | アクション / Action |
+|---|---|
+| 仕様が不明確 / Spec unclear | Ask project owner / オーナーに確認 |
+| 業務合意が見えない / No business agreement | Ask: "Is business sign-off done?" |
+| テスト環境が壊れている / Broken test env | Report without touching / 触らず報告 |
+| 命名禁止リスト該当 / Forbidden name | Do not rename / リネームしない |
+| タイムアウト延長したい / Want longer timeout | Do not extend — fix implementation |
+| 急ぎで省略 / Rush to skip steps | NO — Constitution VII violation |
+
+---
+
+## このファイルの優先順位 | Priority of This File
+
+**English:** When this file conflicts with general AI knowledge or best practices, **this file wins**. When unclear, **ask a human — do not guess**.
+
+**日本語:** このファイルの記述が AI の事前学習知識と衝突する場合、**このファイルが優先**。不明点は**勝手に判断せず**人間に確認。
+
+Examples / 例:
+- 「Service 層を作るべき」→ Attendance Web uses Server Actions directly / Server Actions 直接
+- 「モックを使うべき」→ Real Supabase in integration tests / 統合テストは実 DB
+- 「チャットは日本語」→ **Chat responses are English** / チャットは英語
+- 「文書は英語のみ」→ **Documents are Japanese + English** / 文書は日英併記
