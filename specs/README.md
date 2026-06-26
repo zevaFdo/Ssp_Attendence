@@ -56,6 +56,21 @@ flowchart LR
 
 **English:** Pre-constitution features may be documented as approved baseline specs via GitHub Issues — recording current behavior, not spec-while-coding.
 
+### ベースライン仕様（2026-06-26）| Baseline specs (2026-06-26)
+
+| ID | GitHub | ドメイン / Domain | パス / Path |
+|----|--------|-------------------|-------------|
+| 001 | [#1](https://github.com/zevaFdo/Ssp_Attendence/issues/1) | 認証・セッション / Auth | [`001-baseline-auth/`](./001-baseline-auth/) |
+| 002 | [#2](https://github.com/zevaFdo/Ssp_Attendence/issues/2) | 勤怠・ステータスボード / Attendance | [`002-baseline-attendance/`](./002-baseline-attendance/) |
+| 003 | [#3](https://github.com/zevaFdo/Ssp_Attendence/issues/3) | 申請 / Requests | [`003-baseline-requests/`](./003-baseline-requests/) |
+| 004 | [#4](https://github.com/zevaFdo/Ssp_Attendence/issues/4) | 承認・PDF・Teams / Approvals | [`004-baseline-approvals/`](./004-baseline-approvals/) |
+| 005 | [#5](https://github.com/zevaFdo/Ssp_Attendence/issues/5) | 通知 / Notifications | [`005-baseline-notifications/`](./005-baseline-notifications/) |
+| 006 | [#6](https://github.com/zevaFdo/Ssp_Attendence/issues/6) | 管理・招待 / Admin | [`006-baseline-admin/`](./006-baseline-admin/) |
+
+Issue 起票手順: [`docs/onboarding/02-baseline-issues.md`](../docs/onboarding/02-baseline-issues.md)
+
+**English:** See onboarding guide for creating GitHub Issues and linking issue numbers in each spec.
+
 ---
 
 ## 関連 | Related

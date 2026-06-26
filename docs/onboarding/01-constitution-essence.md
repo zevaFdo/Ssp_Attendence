@@ -176,3 +176,4 @@ Applicant → Section Head → HR → PDF
 1. `/memory/constitution.md` — full constitution / 開発憲法（全文）
 2. `/.cursorrules` — AI agent instructions / AI 向け指示書
 3. `/README.md` — setup & architecture / セットアップ
+4. [`02-baseline-issues.md`](./02-baseline-issues.md) — retroactive baseline specs & GitHub Issues / 遡及ベースライン仕様
