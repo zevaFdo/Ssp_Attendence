@@ -25,6 +25,12 @@
 - Playwright: [specs / result]
 - Manual: [acceptance criteria, screenshots]
 
+## Codex レビュー | Codex Review
+
+- [ ] `@codex review` posted on this PR (or automatic Codex review enabled)
+- [ ] All P0/P1 findings addressed or explained in PR comments
+- [ ] Local `/review` run before push (optional but recommended)
+
 ## 憲法準拠チェック | Constitution Compliance
 
 - [ ] I. Spec exists / 仕様書あり
