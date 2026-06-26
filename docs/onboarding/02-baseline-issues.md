@@ -8,26 +8,26 @@
 
 ## 概要 | Overview
 
-**日本語:** 憲法採用前に実装済みの主要ドメインについて、**現行挙動のベースライン仕様**を `specs/001`〜`006` に文書化済みです。各ドメインに対応する GitHub Issue を起票し、仕様書の `Related Issue` を実際の番号に更新してください。
+**日本語:** 憲法採用前に実装済みの主要ドメインについて、**現行挙動のベースライン仕様**を `specs/001`〜`006` に文書化済みです。対応する GitHub Issue #1–#6 は **クローズ済み**（承認チェックリスト完了）。
 
-**English:** Baseline specs for six pre-constitution domains live in `specs/001`–`006`. Open matching GitHub Issues and update each spec’s `Related Issue` field with the real number.
+**English:** Baseline specs for six pre-constitution domains live in `specs/001`–`006`. Matching GitHub Issues #1–#6 are **closed** (approval checklists completed).
 
 ---
 
 ## 起票状況 | Issue status
 
-**日本語:** 以下 6 Issue は起票済み。各 `specs/00N-*/requirements.md` の `Related Issue` にリンク済み。
+**日本語:** 以下 6 Issue は起票・承認・**クローズ済み**（2026-06-26）。各 `specs/00N-*/requirements.md` の `Related Issue` にリンク済み。
 
-**English:** All six issues are open; each spec’s `Related Issue` field is linked.
+**English:** All six issues are **closed** (approved 2026-06-26); each spec’s `Related Issue` field is linked.
 
-| Spec ID | GitHub Issue | ドメイン / Domain |
-|---------|--------------|-------------------|
-| 001 | [#1](https://github.com/zevaFdo/Ssp_Attendence/issues/1) | 認証・セッション / Auth & session |
-| 002 | [#2](https://github.com/zevaFdo/Ssp_Attendence/issues/2) | 勤怠・ステータスボード / Attendance |
-| 003 | [#3](https://github.com/zevaFdo/Ssp_Attendence/issues/3) | 休暇・遅刻申請 / Requests |
-| 004 | [#4](https://github.com/zevaFdo/Ssp_Attendence/issues/4) | 承認・PDF・Teams / Approvals |
-| 005 | [#5](https://github.com/zevaFdo/Ssp_Attendence/issues/5) | アプリ内通知 / Notifications |
-| 006 | [#6](https://github.com/zevaFdo/Ssp_Attendence/issues/6) | 管理・従業員招待 / Admin |
+| Spec ID | GitHub Issue | 状態 / Status | ドメイン / Domain |
+|---------|--------------|---------------|-------------------|
+| 001 | [#1](https://github.com/zevaFdo/Ssp_Attendence/issues/1) | ✅ Closed | 認証・セッション / Auth & session |
+| 002 | [#2](https://github.com/zevaFdo/Ssp_Attendence/issues/2) | ✅ Closed | 勤怠・ステータスボード / Attendance |
+| 003 | [#3](https://github.com/zevaFdo/Ssp_Attendence/issues/3) | ✅ Closed | 休暇・遅刻申請 / Requests |
+| 004 | [#4](https://github.com/zevaFdo/Ssp_Attendence/issues/4) | ✅ Closed | 承認・PDF・Teams / Approvals |
+| 005 | [#5](https://github.com/zevaFdo/Ssp_Attendence/issues/5) | ✅ Closed | アプリ内通知 / Notifications |
+| 006 | [#6](https://github.com/zevaFdo/Ssp_Attendence/issues/6) | ✅ Closed | 管理・従業員招待 / Admin |
 
 ---
 
@@ -66,13 +66,13 @@ gh issue create --title "[Baseline] 管理・従業員招待" --label "baseline,
 **日本語:**
 
 1. ~~上記 Issue を起票し、仕様書に Issue 番号を反映~~ ✅ 完了（#1–#6）
-2. 各 Issue の承認チェックリストを完了し、ベースラインを正式承認
+2. ~~各 Issue の承認チェックリストを完了し、ベースラインを正式承認~~ ✅ 完了（Issue クローズ済み）
 3. 憲法ギャップ（承認順序・申請種別など）は **別 Issue + 新 spec** で移行
 4. ベースライン承認後、当該ドメインの変更は通常の spec-first フローに従う
 
 **English:**
 
 1. ~~Create issues and link numbers in specs~~ ✅ Done (#1–#6)
-2. Complete each issue’s approval checklist and formally approve baselines
+2. ~~Complete each issue’s approval checklist~~ ✅ Done (issues closed)
 3. Track constitution gaps as **separate migration Issues**
 4. After baseline approval, changes follow normal spec-first workflow

@@ -30,6 +30,7 @@
 - [x] 要件・技術・実装の 3 段階文書化
 - [x] 現行挙動とコードの対応確認
 - [x] GitHub Issue 起票・番号リンク — [#1](https://github.com/zevaFdo/Ssp_Attendence/issues/1)
+- [x] GitHub Issue 承認・クローズ（チェックリスト完了）
 
 ---
 

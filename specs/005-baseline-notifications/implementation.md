@@ -18,6 +18,7 @@
 
 - [x] 3 段階仕様書
 - [x] GitHub Issue リンク — [#5](https://github.com/zevaFdo/Ssp_Attendence/issues/5)
+- [x] GitHub Issue 承認・クローズ（チェックリスト完了）
 
 ---
 

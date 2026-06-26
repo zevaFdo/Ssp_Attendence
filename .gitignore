@@ -58,3 +58,4 @@ public/worker-*.js.map
 # Supabase local
 supabase/.branches
 supabase/.temp
+.cursor/rules/attendance-web-core.mdc
