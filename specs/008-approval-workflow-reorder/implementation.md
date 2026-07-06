@@ -4,7 +4,7 @@
 > **Spec ID:** `specs/008-approval-workflow-reorder/`
 > **Prerequisite:** `technical.md` approved (2026-07-06)
 > **Related Issue:** [#8](https://github.com/zevaFdo/Ssp_Attendence/issues/8)
-> **Status:** approved — **実装進行中 / in progress**
+> **Status:** complete — **PR 待ち / awaiting merge**
 
 ---
 
@@ -20,7 +20,7 @@
 
 1. `test: 承認ワークフロー改正の単体・統合テスト (RED)` — commit
 2. `npm run test` → 失敗確認
-3. `0004_approval_workflow_reorder.sql` + Server Actions + UI + i18n → `feat: 承認順序 Section Head → HR (GREEN)` — commit
+3. `0006_approval_workflow_reorder.sql` + Server Actions + UI + i18n → `feat: 承認順序 Section Head → HR (GREEN)` — commit
 4. E2E 追加 → 全 PASS
 5. 必要なら `refactor:` commit
 
@@ -28,16 +28,16 @@
 
 ## タスク一覧 | Task Checklist
 
-- [ ] 単体: `tests/unit/validations/approval-decision.test.ts`
-- [ ] 統合: `tests/integration/approval-workflow.test.ts`（実 Supabase）
-- [ ] マイグレーション: `supabase/migrations/0004_approval_workflow_reorder.sql`
-- [ ] 型: `database.types.ts`, `app.ts`
-- [ ] バリデーション: `approvalDecisionSchema`
-- [ ] Server Actions: `approvals.ts`
-- [ ] UI: `ApprovalActions`, `/approvals`, `/requests/[id]`
-- [ ] i18n: `ja.json`, `en.json`
-- [ ] E2E: `tests/e2e/approval-workflow.spec.ts`
-- [ ] ブラウザ手動確認（375px）
+- [x] 単体: `tests/unit/validations/approval-decision.test.ts`
+- [x] 統合: `tests/integration/approval-workflow.test.ts`（実 Supabase）
+- [x] マイグレーション: `supabase/migrations/0006_approval_workflow_reorder.sql`
+- [x] 型: `database.types.ts`, `app.ts`
+- [x] バリデーション: `approvalDecisionSchema`
+- [x] Server Actions: `approvals.ts`
+- [x] UI: `ApprovalActions`, `/approvals`, `/requests/[id]`
+- [x] i18n: `ja.json`, `en.json`
+- [x] E2E: `tests/e2e/approval-workflow.spec.ts`
+- [x] ブラウザ手動確認（375px）
 - [ ] PR（`closes #8`）
 
 ---
@@ -46,7 +46,7 @@
 
 | リスク / Risk | 対策 / Mitigation |
 |---------------|-------------------|
-| 進行中申請の移行 | `0004` 内 SQL + 統合テストで検証 |
+| 進行中申請の移行 | `0006` 内 SQL + 統合テストで検証 |
 | PDF タイミング変更 | `hrDecide` のみ `finalizeRequestPdf` |
 | CI に実 Supabase なし | `hasSupabaseTestEnv()` でスキップ（既存パターン） |
 
@@ -54,8 +54,8 @@
 
 ## 完了定義 | Definition of Done
 
-- [ ] `requirements.md` 受け入れ条件すべて PASS
-- [ ] 統合 + E2E + 単体テスト PASS
+- [x] `requirements.md` 受け入れ条件すべて PASS
+- [x] 統合 + E2E + 単体テスト PASS
 - [ ] 憲法 PR チェックリスト完了
 - [ ] Issue #8 クローズ
 

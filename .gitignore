@@ -12,7 +12,7 @@
 /coverage
 /test-results/
 /playwright-report/
-/blob-report/
+/playwright/.auth/
 /playwright/.cache/
 
 # next.js
