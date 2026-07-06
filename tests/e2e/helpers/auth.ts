@@ -65,7 +65,7 @@ async function waitForApprovalColumn(
       async () => {
         const { data } = await supabaseAdmin()
           .from("requests")
-          .select(column)
+          .select("section_head_approval, hr_approval")
           .eq("id", requestId)
           .single();
         if (!data) return null;
