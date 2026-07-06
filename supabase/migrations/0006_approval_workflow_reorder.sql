@@ -1,11 +1,17 @@
 -- ============================================================
--- 0004_approval_workflow_reorder.sql
+-- 0006_approval_workflow_reorder.sql
 -- Section Head (stage 1) → HR (stage 2); rejection_reason required
 -- ============================================================
 
--- ----- rejection_reason + constraint ------------------------
+-- ----- rejection_reason column ------------------------------
 alter table public.requests
   add column if not exists rejection_reason text;
+
+-- Backfill existing rejected rows before CHECK constraint
+update public.requests
+set rejection_reason = left(reason, 1000)
+where (hr_approval = 'rejected' or section_head_approval = 'rejected')
+  and (rejection_reason is null or length(trim(rejection_reason)) < 5);
 
 alter table public.requests
   drop constraint if exists requests_rejection_reason_check;

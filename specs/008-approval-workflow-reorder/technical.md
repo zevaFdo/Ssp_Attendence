@@ -12,9 +12,9 @@
 
 ## アーキテクチャ概要 | Architecture Overview
 
-**日本語:** カラム名 `section_head_approval`（第1段階）・`hr_approval`（第2段階）は**変更しない**（禁止リネーム回避・既存 RLS/型の再利用）。現行は**意味が逆**（HR が先に更新）のため、トリガー・Server Actions・UI クエリ・PDF タイミングを一括で正す。新マイグレーション `0004_approval_workflow_reorder.sql` でスキーマ・トリガー・進行中データ移行を行う。
+**日本語:** カラム名 `section_head_approval`（第1段階）・`hr_approval`（第2段階）は**変更しない**（禁止リネーム回避・既存 RLS/型の再利用）。現行は**意味が逆**（HR が先に更新）のため、トリガー・Server Actions・UI クエリ・PDF タイミングを一括で正す。新マイグレーション `0006_approval_workflow_reorder.sql` でスキーマ・トリガー・進行中データ移行を行う。
 
-**English:** Keep column names `section_head_approval` (stage 1) and `hr_approval` (stage 2) — no renames. Today semantics are inverted (HR acts first). Fix triggers, Server Actions, UI queries, and PDF timing together. New migration `0004_approval_workflow_reorder.sql` handles schema, triggers, and in-flight data.
+**English:** Keep column names `section_head_approval` (stage 1) and `hr_approval` (stage 2) — no renames. Today semantics are inverted (HR acts first). Fix triggers, Server Actions, UI queries, and PDF timing together. New migration `0006_approval_workflow_reorder.sql` handles schema, triggers, and in-flight data.
 
 ### 影響レイヤー | Affected layers
 
@@ -52,7 +52,7 @@
 
 ### スキーマ変更 | Schema changes
 
-**マイグレーション:** `supabase/migrations/0004_approval_workflow_reorder.sql`
+**マイグレーション:** `supabase/migrations/0006_approval_workflow_reorder.sql`
 
 ```sql
 -- rejection_reason（却下時必須）
@@ -339,7 +339,7 @@ const canHR = canApproveAsHR(profile.role) && r.section_head_approval === "appro
 
 | ファイル / File | 変更種別 / Change |
 |-----------------|-------------------|
-| `supabase/migrations/0004_approval_workflow_reorder.sql` | 新規 |
+| `supabase/migrations/0006_approval_workflow_reorder.sql` | 新規 |
 | `src/types/database.types.ts` | `rejection_reason` 追加 |
 | `src/types/app.ts` | 同上（ラッパー型） |
 | `src/lib/validations/requests.ts` | スキーマ拡張 |
