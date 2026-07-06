@@ -141,7 +141,7 @@
     "submitted": "提出: {date}",
     "for": "対象日: {date}",
     "newPageTitle": "新規申請",
-    "newPageSubtitle": "休暇または遅刻申請を提出します。HRに即時通知され、HR承認後に部署長へ送られます。",
+    "newPageSubtitle": "休暇または遅刻申請を提出します。部署長に即時通知され、部署長承認後にHRへ送られます。",
     "form": {
       "type": "申請種別",
       "leave": "休暇申請",
@@ -160,7 +160,8 @@
       "hrDecision": "HRの判定",
       "sectionHeadDecision": "部署長の判定",
       "awaiting": "待機中",
-      "shAvailableAfterHr": "HR承認後に表示されます。",
+      "hrAvailableAfterSh": "部署長承認後に表示されます。",
+      "rejectionReason": "却下理由",
       "approvalDocumentReady": "承認書類の準備ができました",
       "approvalDocumentSubtitle": "PDFはSupabaseストレージに保存されています。",
       "downloadPdf": "PDFをダウンロード",
@@ -181,6 +182,12 @@
     "nothingDecided": "まだ判定はありません。",
     "approve": "承認",
     "reject": "却下",
+    "rejectionReasonLabel": "却下理由",
+    "rejectionReasonPlaceholder": "却下の理由を5文字以上で入力してください",
+    "rejectionReasonTooShort": "却下理由は5文字以上で入力してください",
+    "rejectionDialogTitle": "申請を却下",
+    "rejectionDialogConfirm": "却下する",
+    "rejectionDialogCancel": "キャンセル",
     "labels": {
       "hr": "HR",
       "sectionHead": "部署長"
@@ -285,6 +292,7 @@
     "dateFormat": "日付はYYYY-MM-DD形式で入力してください",
     "reasonMin": "5文字以上入力してください",
     "reasonMax": "1000文字以内で入力してください",
+    "rejectionReasonRequired": "却下理由は5文字以上で入力してください",
     "invalidInput": "入力内容に誤りがあります",
     "fullNameMin": "氏名は2文字以上で入力してください"
   },

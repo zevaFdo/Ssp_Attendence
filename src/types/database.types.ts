@@ -132,6 +132,7 @@ type RequestRow = {
   type: RequestType;
   date: string;
   reason: string;
+  rejection_reason: string | null;
   hr_approval: ApprovalStatus;
   hr_approved_by: string | null;
   hr_approved_at: string | null;
@@ -149,6 +150,7 @@ type RequestInsert = {
   type: RequestType;
   date: string;
   reason: string;
+  rejection_reason?: string | null;
   hr_approval?: ApprovalStatus;
   hr_approved_by?: string | null;
   hr_approved_at?: string | null;
