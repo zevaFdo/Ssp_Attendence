@@ -176,7 +176,15 @@ export async function updateEmployeeWfhWeekday(formData: FormData) {
     .from("profiles")
     .update({ default_wfh_weekday: parsed.data.weekday })
     .eq("id", parsed.data.profileId);
-  if (error) return { error: error.message };
+  if (error) {
+    console.error("[employees] WFH weekday update failed", {
+      actorId: me?.id,
+      profileId: parsed.data.profileId,
+      weekday: parsed.data.weekday,
+      error: error.message,
+    });
+    return { error: error.message };
+  }
 
   revalidatePath("/employees");
   revalidatePath("/");

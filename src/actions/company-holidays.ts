@@ -46,7 +46,15 @@ export async function createCompanyHoliday(formData: FormData) {
     note: parsed.data.note || null,
     created_by: me!.id,
   });
-  if (error) return { error: error.message };
+  if (error) {
+    console.error("[company-holidays] create failed", {
+      actorId: me?.id,
+      action: "create",
+      holidayDate: parsed.data.holiday_date,
+      error: error.message,
+    });
+    return { error: error.message };
+  }
 
   revalidatePath("/settings/holidays");
   return { ok: true as const };
@@ -76,7 +84,15 @@ export async function updateCompanyHoliday(formData: FormData) {
       note: parsed.data.note || null,
     })
     .eq("id", parsed.data.id);
-  if (error) return { error: error.message };
+  if (error) {
+    console.error("[company-holidays] update failed", {
+      actorId: me?.id,
+      action: "update",
+      holidayId: parsed.data.id,
+      error: error.message,
+    });
+    return { error: error.message };
+  }
 
   revalidatePath("/settings/holidays");
   return { ok: true as const };
@@ -92,7 +108,15 @@ export async function deleteCompanyHoliday(holidayId: string) {
     .from("company_holidays")
     .delete()
     .eq("id", holidayId);
-  if (error) return { error: error.message };
+  if (error) {
+    console.error("[company-holidays] delete failed", {
+      actorId: me?.id,
+      action: "delete",
+      holidayId,
+      error: error.message,
+    });
+    return { error: error.message };
+  }
 
   revalidatePath("/settings/holidays");
   return { ok: true as const };

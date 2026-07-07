@@ -14,6 +14,7 @@ import { LogOut, Bell, Clock as ClockIcon } from "lucide-react";
 import { signOut } from "@/actions/auth";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
+import { MobileNavMenu } from "@/components/layout/MobileNavMenu";
 import type { Profile } from "@/types/app";
 
 interface TopbarProps {
@@ -29,6 +30,7 @@ export async function Topbar({ profile, unreadCount }: TopbarProps) {
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b bg-card/80 px-4 backdrop-blur md:px-6">
       <div className="flex items-center gap-2 md:hidden">
+        <MobileNavMenu role={profile.role} />
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
           <ClockIcon className="h-5 w-5" />
         </div>
