@@ -15,22 +15,31 @@ describeIfSupabase("Company calendar & WFH (HR)", () => {
 
   test("HR can add custom holiday and see it listed", async ({ page }) => {
     const marker = `E2E holiday ${Date.now()}`;
-    await page.goto("/settings/holidays", { waitUntil: "domcontentloaded" });
-    await page.getByRole("button", { name: /add holiday|休日を追加/i }).click();
-    await page.locator("#holiday-name").fill(marker);
+    await page.goto("/settings/holidays", { waitUntil: "networkidle" });
+    const addButton = page
+      .getByRole("main")
+      .getByRole("button", { name: /add holiday|休日を追加/i });
+    await expect(addButton).toBeVisible();
+    await addButton.click();
+    const nameInput = page.locator("#holiday-name");
+    await expect(nameInput).toBeVisible({ timeout: 15000 });
+    await nameInput.fill(marker);
     await page.locator("#holiday-date").fill("2099-03-01");
     await page
+      .getByRole("dialog")
       .getByRole("button", { name: /^add holiday$|^休日を追加$/i })
-      .last()
       .click();
     await expect(page.getByText(marker)).toBeVisible({ timeout: 10000 });
   });
 
   test("HR can assign WFH weekday on employees page", async ({ page }) => {
-    await page.goto("/employees", { waitUntil: "domcontentloaded" });
-    const select = page.getByRole("combobox").first();
-    await select.click();
+    await page.goto("/employees", { waitUntil: "networkidle" });
+    const wfhSelect = page
+      .getByRole("combobox", { name: /assign default wfh|wfh 固定曜日を割当/i })
+      .first();
+    await expect(wfhSelect).toBeEnabled({ timeout: 10000 });
+    await wfhSelect.click();
     await page.getByRole("option", { name: /wednesday|水曜/i }).click();
-    await expect(select).toContainText(/wednesday|水曜/i, { timeout: 10000 });
+    await expect(wfhSelect).toContainText(/wednesday|水曜/i, { timeout: 10000 });
   });
 });
