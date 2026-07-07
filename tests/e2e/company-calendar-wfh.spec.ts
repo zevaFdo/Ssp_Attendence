@@ -22,14 +22,14 @@ describeIfSupabase("Company calendar & WFH (HR)", () => {
     await expect(addButton).toBeVisible();
     await addButton.click();
     const nameInput = page.locator("#holiday-name");
-    await expect(nameInput).toBeVisible({ timeout: 15000 });
+    await expect(nameInput).toBeVisible();
     await nameInput.fill(marker);
     await page.locator("#holiday-date").fill("2099-03-01");
     await page
       .getByRole("dialog")
       .getByRole("button", { name: /^add holiday$|^休日を追加$/i })
       .click();
-    await expect(page.getByText(marker)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(marker)).toBeVisible();
   });
 
   test("HR can assign WFH weekday on employees page", async ({ page }) => {
@@ -37,9 +37,9 @@ describeIfSupabase("Company calendar & WFH (HR)", () => {
     const wfhSelect = page
       .getByRole("combobox", { name: /assign default wfh|wfh 固定曜日を割当/i })
       .first();
-    await expect(wfhSelect).toBeEnabled({ timeout: 10000 });
+    await expect(wfhSelect).toBeEnabled();
     await wfhSelect.click();
     await page.getByRole("option", { name: /wednesday|水曜/i }).click();
-    await expect(wfhSelect).toContainText(/wednesday|水曜/i, { timeout: 10000 });
+    await expect(wfhSelect).toContainText(/wednesday|水曜/i);
   });
 });
