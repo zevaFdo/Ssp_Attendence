@@ -141,7 +141,7 @@
     "submitted": "submitted {date}",
     "for": "For {date}",
     "newPageTitle": "New Request",
-    "newPageSubtitle": "Submit a leave or late-arrival request. HR will be notified immediately, then your Section Head once HR approves.",
+    "newPageSubtitle": "Submit a leave or late-arrival request. Your Section Head will be notified first, then HR after Section Head approval.",
     "form": {
       "type": "Request type",
       "leave": "Leave Request",
@@ -160,7 +160,8 @@
       "hrDecision": "HR Decision",
       "sectionHeadDecision": "Section Head Decision",
       "awaiting": "Awaiting",
-      "shAvailableAfterHr": "Available after HR approval.",
+      "hrAvailableAfterSh": "Available after Section Head approval.",
+      "rejectionReason": "Rejection reason",
       "approvalDocumentReady": "Approval document ready",
       "approvalDocumentSubtitle": "PDF stored in Supabase Storage.",
       "downloadPdf": "Download PDF",
@@ -181,6 +182,12 @@
     "nothingDecided": "Nothing decided yet.",
     "approve": "Approve",
     "reject": "Reject",
+    "rejectionReasonLabel": "Rejection reason",
+    "rejectionReasonPlaceholder": "Enter at least 5 characters explaining the rejection",
+    "rejectionReasonTooShort": "Rejection reason must be at least 5 characters",
+    "rejectionDialogTitle": "Reject request",
+    "rejectionDialogConfirm": "Reject",
+    "rejectionDialogCancel": "Cancel",
     "labels": {
       "hr": "HR",
       "sectionHead": "Section Head"
@@ -285,6 +292,7 @@
     "dateFormat": "Date must be in YYYY-MM-DD format",
     "reasonMin": "Please provide at least 5 characters",
     "reasonMax": "Keep it under 1000 characters",
+    "rejectionReasonRequired": "Rejection reason must be at least 5 characters",
     "invalidInput": "Invalid input",
     "fullNameMin": "Full name must be at least 2 characters"
   },

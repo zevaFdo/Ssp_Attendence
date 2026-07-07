@@ -38,25 +38,25 @@ export default async function ApprovalsPage() {
 
   const supabase = await createClient();
 
-  const [{ data: hrPending }, { data: shPending }, { data: completed }] =
+  const [{ data: shPending }, { data: hrPending }, { data: completed }] =
     await Promise.all([
-      isHR
+      isSH
         ? supabase
             .from("requests")
             .select(
               "id, type, date, reason, created_at, profiles!requests_user_id_fkey(full_name, email)",
             )
-            .eq("hr_approval", "pending")
+            .eq("section_head_approval", "pending")
             .order("created_at", { ascending: true })
         : Promise.resolve({ data: [] }),
-      isSH
+      isHR
         ? supabase
             .from("requests")
             .select(
               "id, type, date, reason, created_at, hr_approval, section_head_approval, profiles!requests_user_id_fkey(full_name, email)",
             )
-            .eq("hr_approval", "approved")
-            .eq("section_head_approval", "pending")
+            .eq("section_head_approval", "approved")
+            .eq("hr_approval", "pending")
             .order("created_at", { ascending: true })
         : Promise.resolve({ data: [] }),
       supabase
@@ -71,7 +71,7 @@ export default async function ApprovalsPage() {
         .limit(40),
     ]);
 
-  const defaultTab = isHR ? "hr" : "sh";
+  const defaultTab = isSH ? "sh" : "hr";
 
   return (
     <div className="space-y-6">
@@ -82,29 +82,18 @@ export default async function ApprovalsPage() {
 
       <Tabs defaultValue={defaultTab}>
         <TabsList>
-          {isHR ? (
-            <TabsTrigger value="hr">
-              {t("hrQueue", { count: hrPending?.length ?? 0 })}
-            </TabsTrigger>
-          ) : null}
-          {isSH ? (
-            <TabsTrigger value="sh">
-              {t("shQueue", { count: shPending?.length ?? 0 })}
-            </TabsTrigger>
-          ) : null}
+        {isSH ? (
+          <TabsTrigger value="sh">
+            {t("shQueue", { count: shPending?.length ?? 0 })}
+          </TabsTrigger>
+        ) : null}
+        {isHR ? (
+          <TabsTrigger value="hr">
+            {t("hrQueue", { count: hrPending?.length ?? 0 })}
+          </TabsTrigger>
+        ) : null}
           <TabsTrigger value="done">{t("recentlyDecided")}</TabsTrigger>
         </TabsList>
-
-        {isHR ? (
-          <TabsContent value="hr">
-            <RequestQueue
-              rows={hrPending ?? []}
-              stage="hr"
-              emptyMessage={t("noHrPending")}
-              locale={locale}
-            />
-          </TabsContent>
-        ) : null}
 
         {isSH ? (
           <TabsContent value="sh">
@@ -112,6 +101,17 @@ export default async function ApprovalsPage() {
               rows={shPending ?? []}
               stage="section_head"
               emptyMessage={t("noShPending")}
+              locale={locale}
+            />
+          </TabsContent>
+        ) : null}
+
+        {isHR ? (
+          <TabsContent value="hr">
+            <RequestQueue
+              rows={hrPending ?? []}
+              stage="hr"
+              emptyMessage={t("noHrPending")}
               locale={locale}
             />
           </TabsContent>

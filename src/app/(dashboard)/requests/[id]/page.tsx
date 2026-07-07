@@ -36,7 +36,7 @@ export default async function RequestDetailPage({ params }: PageProps) {
   const { data: r, error } = await supabase
     .from("requests")
     .select(
-      `id, type, date, reason, created_at, document_path,
+      `id, type, date, reason, rejection_reason, created_at, document_path,
        hr_approval, hr_approved_at,
        section_head_approval, section_head_approved_at,
        user_id,
@@ -49,12 +49,13 @@ export default async function RequestDetailPage({ params }: PageProps) {
 
   if (error || !r) notFound();
 
-  const canHR =
-    canApproveAsHR(profile.role) && r.hr_approval === "pending";
   const canSH =
     canApproveAsSectionHead(profile.role) &&
-    r.hr_approval === "approved" &&
     r.section_head_approval === "pending";
+  const canHR =
+    canApproveAsHR(profile.role) &&
+    r.section_head_approval === "approved" &&
+    r.hr_approval === "pending";
 
   const fullyApproved =
     r.hr_approval === "approved" && r.section_head_approval === "approved";
@@ -94,12 +95,12 @@ export default async function RequestDetailPage({ params }: PageProps) {
             </div>
             <div className="flex flex-col gap-2">
               <RequestStatusBadge
-                label={tApprovals("hr")}
-                status={r.hr_approval}
-              />
-              <RequestStatusBadge
                 label={tApprovals("sectionHead")}
                 status={r.section_head_approval}
+              />
+              <RequestStatusBadge
+                label={tApprovals("hr")}
+                status={r.hr_approval}
               />
             </div>
           </div>
@@ -128,26 +129,20 @@ export default async function RequestDetailPage({ params }: PageProps) {
             </p>
           </div>
 
-          <div className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2">
+          {(r.rejection_reason &&
+            (r.hr_approval === "rejected" ||
+              r.section_head_approval === "rejected")) ? (
             <div>
-              <p className="text-xs uppercase text-muted-foreground">
-                {t("hrDecision")}
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                {t("rejectionReason")}
               </p>
-              <p className="text-sm">
-                {r.hr?.full_name ?? t("awaiting")}
-                {r.hr_approved_at ? (
-                  <span className="ml-1 text-xs text-muted-foreground">
-                    ·{" "}
-                    {formatLocalized(r.hr_approved_at, "shortDateTime", locale)}
-                  </span>
-                ) : null}
+              <p className="mt-1 whitespace-pre-line rounded-md bg-rose-50 p-3 text-sm text-rose-900">
+                {r.rejection_reason}
               </p>
-              {canHR ? (
-                <div className="mt-2">
-                  <ApprovalActions requestId={r.id} stage="hr" />
-                </div>
-              ) : null}
             </div>
+          ) : null}
+
+          <div className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2">
             <div>
               <p className="text-xs uppercase text-muted-foreground">
                 {t("sectionHeadDecision")}
@@ -170,9 +165,28 @@ export default async function RequestDetailPage({ params }: PageProps) {
                   <ApprovalActions requestId={r.id} stage="section_head" />
                 </div>
               ) : null}
-              {!canSH && r.hr_approval !== "approved" ? (
+            </div>
+            <div>
+              <p className="text-xs uppercase text-muted-foreground">
+                {t("hrDecision")}
+              </p>
+              <p className="text-sm">
+                {r.hr?.full_name ?? t("awaiting")}
+                {r.hr_approved_at ? (
+                  <span className="ml-1 text-xs text-muted-foreground">
+                    ·{" "}
+                    {formatLocalized(r.hr_approved_at, "shortDateTime", locale)}
+                  </span>
+                ) : null}
+              </p>
+              {canHR ? (
+                <div className="mt-2">
+                  <ApprovalActions requestId={r.id} stage="hr" />
+                </div>
+              ) : null}
+              {!canHR && r.section_head_approval !== "approved" ? (
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {t("shAvailableAfterHr")}
+                  {t("hrAvailableAfterSh")}
                 </p>
               ) : null}
             </div>

@@ -28,23 +28,72 @@ async function loadActor(): Promise<Profile | null> {
   return (data ?? null) as Profile | null;
 }
 
-export async function hrDecide(formData: FormData) {
-  const tErr = await getTranslations("errors");
-  const parsed = approvalDecisionSchema.safeParse({
+function parseDecision(formData: FormData) {
+  const rejectionRaw = formData.get("rejectionReason");
+  return approvalDecisionSchema.safeParse({
     requestId: formData.get("requestId"),
     decision: formData.get("decision"),
+    rejectionReason:
+      typeof rejectionRaw === "string" && rejectionRaw.trim().length > 0
+        ? rejectionRaw
+        : undefined,
   });
+}
+
+export async function hrDecide(formData: FormData) {
+  const tErr = await getTranslations("errors");
+  const parsed = parseDecision(formData);
   if (!parsed.success) return { error: tErr("invalidDecision") };
 
   const actor = await loadActor();
   if (!canApproveAsHR(actor?.role)) return { error: tErr("forbidden") };
 
   const supabase = await createClient();
+  const { data: existing, error: fetchErr } = await supabase
+    .from("requests")
+    .select("section_head_approval, hr_approval")
+    .eq("id", parsed.data.requestId)
+    .single();
+  if (fetchErr || !existing) return { error: tErr("failed") };
+  if (
+    existing.section_head_approval !== "approved" ||
+    existing.hr_approval !== "pending"
+  ) {
+    return { error: tErr("forbidden") };
+  }
+
+  const update: {
+    hr_approval: "approved" | "rejected";
+    rejection_reason?: string;
+  } = { hr_approval: parsed.data.decision };
+  if (parsed.data.decision === "rejected") {
+    update.rejection_reason = parsed.data.rejectionReason;
+  }
+
   const { error } = await supabase
     .from("requests")
-    .update({ hr_approval: parsed.data.decision })
+    .update(update)
     .eq("id", parsed.data.requestId);
   if (error) return { error: error.message };
+
+  if (parsed.data.decision === "approved") {
+    try {
+      await finalizeRequestPdf(parsed.data.requestId);
+    } catch (e) {
+      console.error("[approvals] PDF generation failed", {
+        requestId: parsed.data.requestId,
+        actorId: actor?.id,
+        stage: "hr",
+        error: e instanceof Error ? e.message : e,
+      });
+      revalidatePath("/approvals");
+      revalidatePath(`/requests/${parsed.data.requestId}`);
+      return {
+        ok: true as const,
+        warning: tErr("approvedPdfFailed"),
+      };
+    }
+  }
 
   revalidatePath("/approvals");
   revalidatePath(`/requests/${parsed.data.requestId}`);
@@ -53,37 +102,36 @@ export async function hrDecide(formData: FormData) {
 
 export async function sectionHeadDecide(formData: FormData) {
   const tErr = await getTranslations("errors");
-  const parsed = approvalDecisionSchema.safeParse({
-    requestId: formData.get("requestId"),
-    decision: formData.get("decision"),
-  });
+  const parsed = parseDecision(formData);
   if (!parsed.success) return { error: tErr("invalidDecision") };
 
   const actor = await loadActor();
   if (!canApproveAsSectionHead(actor?.role)) return { error: tErr("forbidden") };
 
   const supabase = await createClient();
+  const { data: existing, error: fetchErr } = await supabase
+    .from("requests")
+    .select("section_head_approval")
+    .eq("id", parsed.data.requestId)
+    .single();
+  if (fetchErr || !existing) return { error: tErr("failed") };
+  if (existing.section_head_approval !== "pending") {
+    return { error: tErr("forbidden") };
+  }
+
+  const update: {
+    section_head_approval: "approved" | "rejected";
+    rejection_reason?: string;
+  } = { section_head_approval: parsed.data.decision };
+  if (parsed.data.decision === "rejected") {
+    update.rejection_reason = parsed.data.rejectionReason;
+  }
+
   const { error } = await supabase
     .from("requests")
-    .update({ section_head_approval: parsed.data.decision })
+    .update(update)
     .eq("id", parsed.data.requestId);
   if (error) return { error: error.message };
-
-  // If fully approved, generate PDF, upload, and store the path.
-  if (parsed.data.decision === "approved") {
-    try {
-      await finalizeRequestPdf(parsed.data.requestId);
-    } catch (e) {
-      console.error("[approvals] PDF generation failed", e);
-      revalidatePath("/approvals");
-      revalidatePath(`/requests/${parsed.data.requestId}`);
-      // Notify the actor; the request is still approved either way.
-      return {
-        ok: true as const,
-        warning: tErr("approvedPdfFailed"),
-      };
-    }
-  }
 
   revalidatePath("/approvals");
   revalidatePath(`/requests/${parsed.data.requestId}`);
