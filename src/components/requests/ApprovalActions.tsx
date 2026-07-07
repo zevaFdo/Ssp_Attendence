@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export function ApprovalActions({ requestId, stage, disabled }: Props) {
+  const router = useRouter();
   const t = useTranslations("approvals");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -49,6 +51,7 @@ export function ApprovalActions({ requestId, stage, disabled }: Props) {
       if (result && "ok" in result && result.ok) {
         setRejectOpen(false);
         setRejectionReason("");
+        router.refresh();
       }
     });
   }

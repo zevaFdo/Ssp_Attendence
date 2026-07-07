@@ -80,7 +80,12 @@ export async function hrDecide(formData: FormData) {
     try {
       await finalizeRequestPdf(parsed.data.requestId);
     } catch (e) {
-      console.error("[approvals] PDF generation failed", e);
+      console.error("[approvals] PDF generation failed", {
+        requestId: parsed.data.requestId,
+        actorId: actor?.id,
+        stage: "hr",
+        error: e instanceof Error ? e.message : e,
+      });
       revalidatePath("/approvals");
       revalidatePath(`/requests/${parsed.data.requestId}`);
       return {
