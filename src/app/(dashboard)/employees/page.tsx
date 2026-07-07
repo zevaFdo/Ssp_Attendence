@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth/session";
-import { canRegisterEmployees, isAdmin } from "@/lib/auth/permissions";
+import { canRegisterEmployees, canAssignDefaultWfhWeekday, isAdmin } from "@/lib/auth/permissions";
 import { InviteEmployeeForm } from "@/components/employees/InviteEmployeeForm";
 import { EmployeeTable } from "@/components/employees/EmployeeTable";
 
@@ -47,6 +47,7 @@ export default async function EmployeesPage() {
         employees={employees ?? []}
         sections={sections ?? []}
         teams={teams ?? []}
+        canEditWfh={canAssignDefaultWfhWeekday(profile.role)}
       />
     </div>
   );
