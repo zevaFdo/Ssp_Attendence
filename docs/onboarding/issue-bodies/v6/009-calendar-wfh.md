@@ -8,7 +8,8 @@
 
 ## 対象仕様書 | Target spec
 
-- `specs/009-company-calendar-wfh-profile/`（requirements 起票予定）
+- `specs/009-company-calendar-wfh-profile/requirements.md` — approved 2026-07-07
+- `specs/009-company-calendar-wfh-profile/technical.md`（requirements 起票済み・technical 起草中）
 
 ---
 
