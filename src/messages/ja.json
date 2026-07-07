@@ -34,6 +34,8 @@
     "adminUsers": "管理 · ユーザー",
     "adminSections": "管理 · 部署",
     "adminTeams": "管理 · チーム",
+    "holidays": "休日カレンダー",
+    "openMenu": "メニューを開く",
     "mobileLabels": {
       "statusBoard": "ホーム",
       "clockInOut": "出退勤",
@@ -78,6 +80,9 @@
   "dashboard": {
     "title": "本日のステータスボード",
     "subtitle": "{date}・リアルタイム更新",
+    "wfh": {
+      "defaultWeekday": "WFH 固定曜日"
+    },
     "empty": "従業員がまだ登録されていません。管理者は「管理 → ユーザー」ページから追加できます。",
     "counts": {
       "present": "在席 {count}",
@@ -215,7 +220,12 @@
       "status": "ステータス",
       "active": "有効",
       "inactive": "無効",
-      "noEmployees": "従業員が見つかりません。"
+      "noEmployees": "従業員が見つかりません。",
+      "wfhWeekday": "WFH 固定曜日"
+    },
+    "wfh": {
+      "assign": "WFH 固定曜日を割当",
+      "saved": "WFH 固定曜日を保存しました"
     },
     "invite": {
       "title": "新しい従業員を招待",
@@ -231,6 +241,31 @@
       "send": "招待を送信",
       "sent": "招待を送信しました。ユーザーにメールが届きます。"
     }
+  },
+  "holidays": {
+    "metaTitle": "休日カレンダー · 勤怠ウェブ",
+    "title": "休日カレンダー",
+    "subtitle": "会社特別休日・祝日・独自休日を確認・管理します。",
+    "specialTitle": "会社特別休日（自動）",
+    "specialYearEnd": "年末年始: 12/29 – 1/4（毎年）",
+    "specialObon": "お盆: 8/14 – 8/16（毎年）",
+    "nationalTitle": "祝日（{year}年）",
+    "customTitle": "会社独自休日",
+    "add": "休日を追加",
+    "edit": "休日を編集",
+    "delete": "削除",
+    "name": "名称",
+    "date": "日付",
+    "note": "メモ",
+    "empty": "会社独自休日はまだ登録されていません。"
+  },
+  "weekdays": {
+    "mon": "月曜",
+    "tue": "火曜",
+    "wed": "水曜",
+    "thu": "木曜",
+    "fri": "金曜",
+    "unassigned": "未割当"
   },
   "admin": {
     "users": {

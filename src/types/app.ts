@@ -31,6 +31,7 @@ export interface Profile {
   avatar_url: string | null;
   is_active: boolean;
   preferred_language: "ja" | "en";
+  default_wfh_weekday: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -80,6 +81,16 @@ export interface RequestRecord {
   section_head_approved_by: string | null;
   section_head_approved_at: string | null;
   document_path: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CompanyHoliday {
+  id: string;
+  name: string;
+  holiday_date: string;
+  note: string | null;
+  created_by: string | null;
   created_at: string;
   updated_at: string;
 }

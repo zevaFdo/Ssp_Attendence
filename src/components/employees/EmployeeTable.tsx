@@ -5,14 +5,16 @@ import type { Profile, Section, Team } from "@/types/app";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { initials } from "@/lib/utils/format";
 import { Badge } from "@/components/ui/badge";
+import { WfhWeekdayCell } from "@/components/employees/WfhWeekdayCell";
 
 interface Props {
   employees: Profile[];
   sections: Section[];
   teams: Team[];
+  canEditWfh: boolean;
 }
 
-export function EmployeeTable({ employees, sections, teams }: Props) {
+export function EmployeeTable({ employees, sections, teams, canEditWfh }: Props) {
   const t = useTranslations("employees.table");
   const tRoles = useTranslations("roles");
 
@@ -28,7 +30,7 @@ export function EmployeeTable({ employees, sections, teams }: Props) {
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border bg-card">
+    <div className="overflow-x-auto rounded-lg border bg-card">
       <table className="w-full text-sm">
         <thead className="bg-muted text-left text-xs uppercase tracking-wide text-muted-foreground">
           <tr>
@@ -36,6 +38,7 @@ export function EmployeeTable({ employees, sections, teams }: Props) {
             <th className="px-4 py-3">{t("role")}</th>
             <th className="px-4 py-3">{t("section")}</th>
             <th className="px-4 py-3">{t("team")}</th>
+            <th className="px-4 py-3">{t("wfhWeekday")}</th>
             <th className="px-4 py-3">{t("status")}</th>
           </tr>
         </thead>
@@ -66,6 +69,13 @@ export function EmployeeTable({ employees, sections, teams }: Props) {
               </td>
               <td className="px-4 py-3 text-muted-foreground">
                 {e.team_id ? (teamMap.get(e.team_id) ?? "—") : "—"}
+              </td>
+              <td className="px-4 py-3">
+                <WfhWeekdayCell
+                  profileId={e.id}
+                  value={e.default_wfh_weekday ?? null}
+                  editable={canEditWfh}
+                />
               </td>
               <td className="px-4 py-3">
                 {e.is_active ? (

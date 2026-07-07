@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { StatusBoard } from "@/components/dashboard/StatusBoard";
 import type { StatusCardEmployee } from "@/components/dashboard/StatusCard";
 import { ClockInOutCard } from "@/components/attendance/ClockInOutCard";
+import { DefaultWfhCard } from "@/components/dashboard/DefaultWfhCard";
 import { todayISO, formatLocalized } from "@/lib/utils/date";
 import { getCurrentProfile } from "@/lib/auth/session";
 import type { AttendanceStatus } from "@/types/app";
@@ -87,6 +88,9 @@ export default async function HomePage() {
         </p>
       </div>
       {profile ? <ClockInOutCard today={mineToday} /> : null}
+      {profile ? (
+        <DefaultWfhCard weekday={profile.default_wfh_weekday ?? null} />
+      ) : null}
       <StatusBoard
         employees={employees}
         currentUserId={profile?.id ?? null}

@@ -34,6 +34,8 @@
     "adminUsers": "Admin · Users",
     "adminSections": "Admin · Sections",
     "adminTeams": "Admin · Teams",
+    "holidays": "Holiday calendar",
+    "openMenu": "Open menu",
     "mobileLabels": {
       "statusBoard": "Home",
       "clockInOut": "Clock",
@@ -78,6 +80,9 @@
   "dashboard": {
     "title": "Daily Status Board",
     "subtitle": "{date} · live updates",
+    "wfh": {
+      "defaultWeekday": "Default WFH weekday"
+    },
     "empty": "No employees yet. An admin can add team members from the Admin → Users page.",
     "counts": {
       "present": "Present {count}",
@@ -215,7 +220,12 @@
       "status": "Status",
       "active": "Active",
       "inactive": "Inactive",
-      "noEmployees": "No employees found."
+      "noEmployees": "No employees found.",
+      "wfhWeekday": "Default WFH weekday"
+    },
+    "wfh": {
+      "assign": "Assign default WFH weekday",
+      "saved": "Default WFH weekday saved"
     },
     "invite": {
       "title": "Invite a new employee",
@@ -231,6 +241,31 @@
       "send": "Send invite",
       "sent": "Invitation sent. The user will receive an email."
     }
+  },
+  "holidays": {
+    "metaTitle": "Holiday calendar · Attendance Web",
+    "title": "Holiday calendar",
+    "subtitle": "View company special holidays, national holidays, and custom days off.",
+    "specialTitle": "Company special holidays (automatic)",
+    "specialYearEnd": "Year-end / New Year: Dec 29 – Jan 4 (every year)",
+    "specialObon": "Obon: Aug 14 – Aug 16 (every year)",
+    "nationalTitle": "National holidays ({year})",
+    "customTitle": "Custom company holidays",
+    "add": "Add holiday",
+    "edit": "Edit holiday",
+    "delete": "Delete",
+    "name": "Name",
+    "date": "Date",
+    "note": "Note",
+    "empty": "No custom company holidays yet."
+  },
+  "weekdays": {
+    "mon": "Monday",
+    "tue": "Tuesday",
+    "wed": "Wednesday",
+    "thu": "Thursday",
+    "fri": "Friday",
+    "unassigned": "Unassigned"
   },
   "admin": {
     "users": {

@@ -29,3 +29,11 @@ export function canApproveAsSectionHead(role: UserRole | null | undefined) {
 export function canManageTeam(role: UserRole | null | undefined) {
   return role === "team_leader" || role === "admin";
 }
+
+export function canManageCompanyHolidays(role: UserRole | null | undefined) {
+  return role === "admin" || role === "hr_supervisor";
+}
+
+export function canAssignDefaultWfhWeekday(role: UserRole | null | undefined) {
+  return role === "admin" || role === "hr_supervisor";
+}

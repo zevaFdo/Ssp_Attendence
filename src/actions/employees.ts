@@ -6,10 +6,12 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   canRegisterEmployees,
+  canAssignDefaultWfhWeekday,
   isAdmin,
 } from "@/lib/auth/permissions";
 import type { Profile, UserRole } from "@/types/app";
 import { translateZodIssue } from "@/lib/validations/translate";
+import { wfhWeekdaySchema } from "@/lib/validations/wfh-weekday";
 import { z } from "zod";
 
 const inviteSchema = z.object({
@@ -145,5 +147,46 @@ export async function updateEmployee(formData: FormData) {
 
   revalidatePath("/employees");
   revalidatePath("/admin/users");
+  return { ok: true as const };
+}
+
+export async function updateEmployeeWfhWeekday(formData: FormData) {
+  const tErr = await getTranslations("errors");
+  const me = await actor();
+  if (!canAssignDefaultWfhWeekday(me?.role)) {
+    return { error: tErr("forbidden") };
+  }
+
+  const weekdayRaw = formData.get("weekday");
+  const weekdayParsed =
+    weekdayRaw === "" || weekdayRaw === "null" || weekdayRaw === null
+      ? null
+      : Number(weekdayRaw);
+
+  const parsed = wfhWeekdaySchema.safeParse({
+    profileId: formData.get("profileId"),
+    weekday: weekdayParsed,
+  });
+  if (!parsed.success) {
+    return { error: await translateZodIssue(parsed.error) };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update({ default_wfh_weekday: parsed.data.weekday })
+    .eq("id", parsed.data.profileId);
+  if (error) {
+    console.error("[employees] WFH weekday update failed", {
+      actorId: me?.id,
+      profileId: parsed.data.profileId,
+      weekday: parsed.data.weekday,
+      error: error.message,
+    });
+    return { error: error.message };
+  }
+
+  revalidatePath("/employees");
+  revalidatePath("/");
   return { ok: true as const };
 }

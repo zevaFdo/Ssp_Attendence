@@ -9,6 +9,7 @@ import {
   UsersRound,
   Bell,
   Shield,
+  CalendarDays,
   type LucideIcon,
 } from "lucide-react";
 import type { UserRole } from "@/types/app";
@@ -64,6 +65,12 @@ export const NAV_ITEMS: NavItem[] = [
     labelKey: "employees",
     icon: Users,
     allow: ["admin", "hr_supervisor", "section_head"],
+  },
+  {
+    href: "/settings/holidays",
+    labelKey: "holidays",
+    icon: CalendarDays,
+    allow: ["admin", "hr_supervisor"],
   },
   {
     href: "/notifications",

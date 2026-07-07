@@ -45,6 +45,7 @@ type ProfileRow = {
   avatar_url: string | null;
   is_active: boolean;
   preferred_language: "ja" | "en";
+  default_wfh_weekday: number | null;
   created_at: string;
   updated_at: string;
 };
@@ -60,6 +61,27 @@ type ProfileInsert = {
   avatar_url?: string | null;
   is_active?: boolean;
   preferred_language?: "ja" | "en";
+  default_wfh_weekday?: number | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type CompanyHolidayRow = {
+  id: string;
+  name: string;
+  holiday_date: string;
+  note: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type CompanyHolidayInsert = {
+  id?: string;
+  name: string;
+  holiday_date: string;
+  note?: string | null;
+  created_by?: string | null;
   created_at?: string;
   updated_at?: string;
 };
@@ -190,6 +212,20 @@ export type Database = {
         Insert: ProfileInsert;
         Update: Partial<ProfileInsert>;
         Relationships: [];
+      };
+      company_holidays: {
+        Row: CompanyHolidayRow;
+        Insert: CompanyHolidayInsert;
+        Update: Partial<CompanyHolidayInsert>;
+        Relationships: [
+          {
+            foreignKeyName: "company_holidays_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       sections: {
         Row: SectionRow;

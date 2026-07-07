@@ -36,3 +36,7 @@ export function getSupabaseTestKey(): string {
   }
   return key;
 }
+
+export function getSupabaseAnonKey(): string | null {
+  return process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? null;
+}
