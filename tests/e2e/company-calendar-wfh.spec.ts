@@ -1,0 +1,36 @@
+import { expect, test } from "@playwright/test";
+import { hasSupabaseTestEnv } from "./helpers/env";
+
+const describeIfSupabase = hasSupabaseTestEnv() ? test.describe : test.describe.skip;
+
+test.describe("Company calendar & WFH (smoke)", () => {
+  test("holidays page requires auth redirect or UI", async ({ page }) => {
+    await page.goto("/settings/holidays");
+    await expect(page).toHaveURL(/\/(login|settings\/holidays)/);
+  });
+});
+
+describeIfSupabase("Company calendar & WFH (HR)", () => {
+  test.use({ storageState: "playwright/.auth/hr.json" });
+
+  test("HR can add custom holiday and see it listed", async ({ page }) => {
+    const marker = `E2E holiday ${Date.now()}`;
+    await page.goto("/settings/holidays", { waitUntil: "domcontentloaded" });
+    await page.getByRole("button", { name: /add holiday|休日を追加/i }).click();
+    await page.locator("#holiday-name").fill(marker);
+    await page.locator("#holiday-date").fill("2099-03-01");
+    await page
+      .getByRole("button", { name: /^add holiday$|^休日を追加$/i })
+      .last()
+      .click();
+    await expect(page.getByText(marker)).toBeVisible({ timeout: 10000 });
+  });
+
+  test("HR can assign WFH weekday on employees page", async ({ page }) => {
+    await page.goto("/employees", { waitUntil: "domcontentloaded" });
+    const select = page.getByRole("combobox").first();
+    await select.click();
+    await page.getByRole("option", { name: /wednesday|水曜/i }).click();
+    await expect(select).toContainText(/wednesday|水曜/i, { timeout: 10000 });
+  });
+});
